@@ -36,7 +36,7 @@ end
 ############################################################
 env = ENV['SINATRA_ENV'] || "development"
 config = YAML.load_file("#{Dir.pwd}/ass.yml")
-$timer = config['timer'] || 1
+$timer = "#{config['timer']}".to_i
 $cron = config['cron'] || 'cron'
 $port = config['port'] || 4567
 $mode = config['mode'] || env
@@ -107,7 +107,7 @@ Push = DB[:pushes]
 ############################################################
 scheduler = Rufus::Scheduler.start_new
 
-unless "#{$timer}".squeeze.strip == "0"
+unless $timer == 0 then
   scheduler.every "#{$timer}m" do
     puts "running job: '#{Dir.pwd}/#{$cron}' every #{$timer} #{($timer == 1) ? 'minute' : 'minutes'}"
     system "./#{$cron}"

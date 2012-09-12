@@ -1,6 +1,6 @@
 #source "http://rubygems.org"
-source "http://ruby.taobao.org"
 source "http://rubygems.org"
+source "http://ruby.taobao.org"
 source "http://gems.github.com"
 # Add dependencies required to use your gem here.
 # Example:
