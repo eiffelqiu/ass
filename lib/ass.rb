@@ -52,12 +52,12 @@ $apps = config['apps'] || []
 unless File.exist?("#{Dir.pwd}/#{$certificate}") then
   puts "1: please provide certificate key pem file under current directory"
   puts "2: edit your ass.yml under current directory"
-  puts "3: run spns"
+  puts "3: run ass"
   puts "4: iOS Client: in AppDelegate file, didRegisterForRemoteNotificationsWithDeviceToken method should access url below:"
   $apps.each { |app|
     puts "'#{app}'s registration url:  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken"
   }
-  puts "5: Server: cron should access 'curl http://localhost:#{$port}/v1/app/push/#{messages}/#{pid}' to send push message"
+  puts "5: Server: cron should access 'curl http://localhost:#{$port}/v1/app/push/{messages}/{pid}' to send push message"
   exit
 else
   puts "*"*80
