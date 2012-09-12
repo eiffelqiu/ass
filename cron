@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'yaml'
+require 'cgi'
+require 'digest/sha2'
+
+###########################################################################
+####
+#### This script is only for demo purpose, you can write this script
+#### with any language you like(python, perl, shell etc)
+####
+###########################################################################
+
+############################################################
+## Configuration Setup
+############################################################
+env = ENV['SINATRA_ENV'] || "development"
+config = YAML.load_file("#{Dir.pwd}/ass.yml")
+$port = config['port'] || 4567
+$apps = config['apps'] || []
+
+############################################################
+## Using curl command to send push notification message
+############################################################
+
+@message = CGI::escape("sample push notification message")
+
+#@pid = Digest::SHA2.hexdigest("#{Time.now.to_i}")
+@pid = "#{Time.now.to_i}"
+
+$apps.each { |app|
+  sleep 1
+  puts "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{@message}/#{@pid}"
+  system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{@message}/#{@pid}"
+}

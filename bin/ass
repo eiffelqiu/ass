@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'rubygems' unless defined?(Gem) 
+require 'sinatra/base'
+require 'thread'
+
+class Object
+  alias sh system
+end
+
+require 'ass'
+
+App.run!
