@@ -1,4 +1,4 @@
-port: 54188
+port: 4567
 mode: development
 cron: cron
 timer: 0
