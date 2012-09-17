@@ -16,6 +16,7 @@ group :development do
 end
 
 gem 'sqlite3'
+gem 'thin'
 gem 'sinatra'
 gem 'sequel'
 gem 'rufus-scheduler'

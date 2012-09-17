@@ -17,13 +17,15 @@ Jeweler::Tasks.new do |gem|
   gem.name = "ass"
   gem.homepage = "http://github.com/eiffelqiu/ass"
   gem.license = "MIT"
-  gem.summary = %Q{Simple Push Notification Server}
-  gem.description = %Q{Simple Push Notification Server written with Sinatra and Sequel(Sqlite3)}
+  gem.summary = %Q{Apple Service Server}
+  gem.description = %Q{Apple Service Server written with Sinatra and Sequel(Sqlite3)}
   gem.email = "eiffelqiu@gmail.com"
   gem.authors = ["Eiffel Qiu"]
   gem.executables = ['ass']
   gem.files = %w(cron LICENSE.txt README.md ass.yml VERSION) + Dir.glob('lib/**/*')
   # dependencies defined in Gemfile
+  gem.add_dependency 'sqlite3'
+  gem.add_dependency 'thin'
   gem.add_dependency 'sinatra'
   gem.add_dependency 'sequel'
   gem.add_dependency 'rufus-scheduler'

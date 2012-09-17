@@ -9,6 +9,6 @@ class Object
   alias sh system
 end
 
-require 'ass'
+require 'spns'
 
 App.run!

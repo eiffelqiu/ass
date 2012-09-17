@@ -1,11 +1,6 @@
-port: 4567
+port: 54188
 mode: development
 cron: cron
-timer: 0	# minute
-development:
-    - certificate   : ck_dev.pem
-production:
-    - certificate   : ck_prod.pem
+timer: 0
 apps:
 - app1
-- app2

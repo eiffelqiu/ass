@@ -16,7 +16,7 @@ require 'digest/sha2'
 ## Configuration Setup
 ############################################################
 env = ENV['SINATRA_ENV'] || "development"
-config = YAML.load_file("#{Dir.pwd}/ass.yml")
+config = YAML.load_file("#{Dir.pwd}/spns.yml")
 $port = config['port'] || 4567
 $apps = config['apps'] || []
 
