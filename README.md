@@ -1,6 +1,6 @@
 ass
 =======
-####Apple Service Server written with Ruby/Sinatra and Sequel(Sqlite3)####
+####Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification and in app purchase service.####
 
 Feature:
 =======
