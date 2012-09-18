@@ -94,7 +94,7 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
 
   $DB.create_table :tokens do
     primary_key :id
-    String :app, :unique => true, :null => false
+    String :app, :unique => false, :null => false
     String :token, :unique => true, :null => false, :size => 100
     index [:app, :token]
   end
