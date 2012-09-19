@@ -30,7 +30,8 @@ Jeweler::Tasks.new do |gem|
   gem.add_dependency 'sequel'
   gem.add_dependency 'rufus-scheduler'
   gem.add_dependency 'eventmachine'
-  gem.add_dependency 'activesupport', '>= 3.2.8'   
+  gem.add_dependency 'activesupport', '>= 3.2.8'  
+  gem.add_dependency 'uri-handler' 
   
   gem.rubyforge_project = 'ass'
 end

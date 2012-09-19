@@ -11,6 +11,8 @@ require 'rufus/scheduler'
 require 'eventmachine'
 require 'sinatra/base'
 require 'yaml'
+require 'uri-handler'
+require 'active_support'
 
 ############################################################
 ## Initilization Setup
@@ -190,6 +192,7 @@ class App < Sinatra::Base
 
     get "/v1/apps/#{app}/push/:message/:pid" do
       message = CGI::unescape(params[:message])
+      puts message
       pid = params[:pid]
 
       puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]"
@@ -217,7 +220,9 @@ class App < Sinatra::Base
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
           # construct the payload
-          payload = "{\"aps\":{\"alert\":\"#{message}\", \"badge\":1}}"
+          po = { :aps => { :alert => "#{message}", :badge => '1' }}
+          payload = ActiveSupport::JSON.encode(po)          
+          #payload = "{\"aps\":{\"alert\":\"#{message}\", \"badge\":1}}"
           # construct the packet
           packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
           # read our certificate and set up our SSL context
