@@ -50,6 +50,7 @@ $apps = config['apps'] || []
 ############################################################
 
 $certkey = {}
+
 def check_cert
   $apps.each { |app|
     unless File.exist?("#{Dir.pwd}/#{app}_#{$mode}.pem") then
@@ -60,31 +61,37 @@ def check_cert
       certfile = File.read("#{Dir.pwd}/#{app}_#{$mode}.pem")
       openSSLContext = OpenSSL::SSL::SSLContext.new
       openSSLContext.cert = OpenSSL::X509::Certificate.new(certfile)
-      openSSLContext.key = OpenSSL::PKey::RSA.new(certfile)   
-      $certkey["#{app}"] = openSSLContext       
+      openSSLContext.key = OpenSSL::PKey::RSA.new(certfile)
+      $certkey["#{app}"] = openSSLContext
     end
-  }  
+  }
   return true
 end
 
 unless check_cert then
-  puts "1: please provide certificate key pem file under current directory, name should be: appid_dev.pem for development and appid_prod.pem for production"
-  puts "2: edit your ass.yml under current directory"
-  puts "3: run ass"
-  puts "4: iOS Client: in AppDelegate file, didRegisterForRemoteNotificationsWithDeviceToken method should access url below:"
+  html = <<-END
+1: please provide certificate key pem file under current directory, name should be: appid_dev.pem for development and appid_prod.pem for production
+2: edit your ass.yml under current directory
+3: run ass
+4: iOS Client: in AppDelegate file, didRegisterForRemoteNotificationsWithDeviceToken method should access url below:
+END
   $apps.each { |app|
-    puts "'#{app}'s registration url:  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken"
+    html << "'#{app}'s registration url:  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken"
   }
-  puts "5: Server: cron should access 'curl http://localhost:#{$port}/v1/app/push/{messages}/{pid}' to send push message"
+  html <<  "5: Server: cron should access 'curl http://localhost:#{$port}/v1/app/push/{messages}/{pid}' to send push message"
+  puts html
   exit
 else
-  puts "*"*80
-  puts "Apple Service Server(#{$VERSION}) is Running ..."
-  puts "Push Notification Service: Enabled"
-  puts "Mode: #{$mode}"
-  puts "Port: #{$port}"
-  puts "Cron Job: '#{Dir.pwd}/#{$cron}' script is running every #{$timer} #{($timer == 1) ? 'minute' : 'minutes'} " unless "#{$timer}".to_i == 0
-  puts "*"*80
+  html = <<-END
+#{'*'*80}
+Apple Service Server(#{$VERSION}) is Running ...
+Push Notification Service: Enabled
+Mode: #{$mode}
+Port: #{$port}
+END
+  html << "Cron Job: '#{Dir.pwd}/#{$cron}' script is running every #{$timer} #{($timer == 1) ? 'minute' : 'minutes'} " unless "#{$timer}".to_i == 0
+  html << "#{'*'*80}"
+  puts html
 end
 
 ############################################################
@@ -123,25 +130,6 @@ unless $timer == 0 then
     puts "running job: '#{Dir.pwd}/#{$cron}' every #{$timer} #{($timer == 1) ? 'minute' : 'minutes'}"
     system "./#{$cron}"
   end
-else
-  puts "1: How to register notification? (Client Side)"
-  puts
-  puts "In AppDelegate file, inside didRegisterForRemoteNotificationsWithDeviceToken method access url below to register device token:"
-  $apps.each { |app|
-    puts "'#{app}'s registration url:  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken"
-  }
-  puts
-  puts "2: How to send push notification? (Server Side)"
-  puts
-  $apps.each { |app|
-    puts "curl http://localhost:#{$port}/v1/apps/#{app}/push/{message}/{pid}"
-  }
-  puts
-  puts "Note:"
-  puts "param1 (message): push notification message you want to send, remember the message should be html escaped"
-  puts "param2 (pid    ): unique string to mark the message, for example current timestamp or md5/sha1 digest"
-  puts
-  puts "*"*80
 end
 
 ############################################################
@@ -151,31 +139,35 @@ end
 class App < Sinatra::Base
 
   set :port, "#{$port}".to_i
-  
+
   if "#{$mode}".strip == 'development' then
     set :show_exceptions, true
     set :dump_errors, true
   else
     set :show_exceptions, false
-    set :dump_errors, false      
+    set :dump_errors, false
   end
 
   get '/' do
-    o = "Apple Service Server #{$VERSION} <br/><br/>" + 
-    "author: Eiffel(Q) <br/>email: eiffelqiu@gmail.com<br/><br/>"
-    o += "1: How to register notification? (Client Side)<br/><br/>"
-    o += "In AppDelegate file, inside didRegisterForRemoteNotificationsWithDeviceToken method access url below to register device token:<br/><br/>"
+    html = <<END
+    Apple Service Server #{$VERSION} <br/><br/>
+    author: Eiffel(Q) <br/>email: eiffelqiu@gmail.com<br/><br/>
+    1: How to register notification? (Client Side)<br/><br/>
+    In AppDelegate file, inside didRegisterForRemoteNotificationsWithDeviceToken method access url below to register device token:<br/><br/>"
+END
     $apps.each { |app|
-      o += "'#{app}':  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken<br/>"
+      html << "'#{app}':  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken<br/>"
     }
-    o += "<br/>2: How to send push notification? (Server Side)<br/><br/>"
+    html << "<br/>2: How to send push notification? (Server Side)<br/><br/>"
     $apps.each { |app|
-      o += "curl http://localhost:#{$port}/v1/apps/#{app}/push/{message}/{pid}<br/>"
+      html << "curl http://localhost:#{$port}/v1/apps/#{app}/push/{message}/{pid}<br/>"
     }
-    o +=  "<br/>Note:<br/>"
-    o +=  "param1 (message): push notification message you want to send, remember the message should be html escaped<br/>"
-    o +=  "param2 (pid    ): unique string to mark the message, for example current timestamp or md5/sha1 digest<br/>"  
-    o
+    html << <<END
+    <br/>Note:<br/>
+    param1 (message): push notification message you want to send, remember the message should be html escaped<br/>
+    param2 (pid    ): unique string to mark the message, for example current timestamp or md5/sha1 digest<br/>
+END
+    html
   end
 
   $apps.each { |app|
@@ -220,8 +212,8 @@ class App < Sinatra::Base
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
           # construct the payload
-          po = { :aps => { :alert => "#{message}", :badge => 1 }}
-          payload = ActiveSupport::JSON.encode(po)          
+          po = {:aps => {:alert => "#{message}", :badge => 1}}
+          payload = ActiveSupport::JSON.encode(po)
           # construct the packet
           packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
           # read our certificate and set up our SSL context

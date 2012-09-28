@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+require 'rubygems'
 require 'yaml'
 require 'cgi'
 require 'digest/sha2'
@@ -25,7 +26,7 @@ $apps = config['apps'] || []
 ## Using curl command to send push notification message
 ############################################################
 
-@message = CGI::escape("今天你搓一男家的狗怎么样了？".to_uri)
+@message = CGI::escape("This is an push notification message sent by ASS".to_uri)
 
 #@pid = Digest::SHA2.hexdigest("#{Time.now.to_i}")
 @pid = "#{Time.now.to_i}"
