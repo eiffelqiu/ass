@@ -139,6 +139,8 @@ end
 class App < Sinatra::Base
 
   set :port, "#{$port}".to_i
+  
+  set :views, File.expand_path('../views', __FILE__)
 
   if "#{$mode}".strip == 'development' then
     set :show_exceptions, true
