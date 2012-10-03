@@ -22,7 +22,7 @@ Jeweler::Tasks.new do |gem|
   gem.email = "eiffelqiu@gmail.com"
   gem.authors = ["Eiffel Qiu"]
   gem.executables = ['ass']
-  gem.files = %w(cron LICENSE.txt README.md ass.yml VERSION) + Dir.glob('lib/**/*')
+  gem.files = %w(cron LICENSE.txt README.md ass.yml VERSION) + Dir.glob('lib/**/*') + Dir.glob('views/**/*')  + Dir.glob('public/**/*')
   # dependencies defined in Gemfile
   gem.add_dependency 'sqlite3'
   gem.add_dependency 'thin'

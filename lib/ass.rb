@@ -139,8 +139,12 @@ end
 class App < Sinatra::Base
 
   set :port, "#{$port}".to_i
+  set :root, File.expand_path('../../', __FILE__)
+  set :views, File.expand_path('../../views', __FILE__)
   
-  set :views, File.expand_path('../views', __FILE__)
+  configure :production, :development do
+    enable :logging 
+  end  
 
   if "#{$mode}".strip == 'development' then
     set :show_exceptions, true
@@ -151,6 +155,7 @@ class App < Sinatra::Base
   end
 
   get '/' do
+    puts File.expand_path('../../', __FILE__)
     html = <<END
     Apple Service Server #{$VERSION} <br/><br/>
     author: Eiffel(Q) <br/>email: eiffelqiu@gmail.com<br/><br/>
