@@ -1,5 +1,6 @@
 port: 4567
 mode: development
+log: off
 cron: cron
 timer: 0
 apps:

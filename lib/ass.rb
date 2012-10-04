@@ -44,6 +44,7 @@ $port = config['port'] || 4567
 $mode = config['mode'] || env
 $VERSION = File.open("#{ROOTDIR}/VERSION", "rb").read
 $apps = config['apps'] || []
+$log = config['log'] || 'off'
 
 ############################################################
 ## Certificate Key Setup
@@ -137,13 +138,16 @@ end
 ############################################################
 
 class App < Sinatra::Base
-
-  set :port, "#{$port}".to_i
-  set :root, File.expand_path('../../', __FILE__)
-  set :views, File.expand_path('../../views', __FILE__)
   
+  set :root, File.expand_path('../../', __FILE__)
+  set :port, "#{$port}".to_i
+  set :public_folder, File.dirname(__FILE__) + '/../public'
+  set :views, File.dirname(__FILE__) + '/../views'    
+
   configure :production, :development do
-    enable :logging 
+    if "#{$log}".strip == 'on' then
+      enable :logging 
+    end
   end  
 
   if "#{$mode}".strip == 'development' then
@@ -155,26 +159,7 @@ class App < Sinatra::Base
   end
 
   get '/' do
-    puts File.expand_path('../../', __FILE__)
-    html = <<END
-    Apple Service Server #{$VERSION} <br/><br/>
-    author: Eiffel(Q) <br/>email: eiffelqiu@gmail.com<br/><br/>
-    1: How to register notification? (Client Side)<br/><br/>
-    In AppDelegate file, inside didRegisterForRemoteNotificationsWithDeviceToken method access url below to register device token:<br/><br/>"
-END
-    $apps.each { |app|
-      html << "'#{app}':  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken<br/>"
-    }
-    html << "<br/>2: How to send push notification? (Server Side)<br/><br/>"
-    $apps.each { |app|
-      html << "curl http://localhost:#{$port}/v1/apps/#{app}/push/{message}/{pid}<br/>"
-    }
-    html << <<END
-    <br/>Note:<br/>
-    param1 (message): push notification message you want to send, remember the message should be html escaped<br/>
-    param2 (pid    ): unique string to mark the message, for example current timestamp or md5/sha1 digest<br/>
-END
-    html
+    erb :index
   end
 
   $apps.each { |app|

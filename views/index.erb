@@ -1,1 +1,26 @@
-111
+
+    <h1>Apple Service Server (<%= $VERSION %>) </h1>
+	<hr>
+	<p/>
+    <p><b>
+		author: Eiffel(Q) <br/>
+		email: eiffelqiu@gmail.com <br/>
+		github: https://github.com/eiffelqiu/
+	</b><p/>
+	<hr>	
+	<pre class="prettyprint linenums">		
+    1: How to register notification? (Client Side)
+	
+    In AppDelegate file, inside didRegisterForRemoteNotificationsWithDeviceToken method access url below to register device token:
+    <% $apps.each { |app| %>
+    '#{app}':  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken
+    <% } %>
+    2: How to send push notification? (Server Side)
+    <% $apps.each { |app| %> 
+    $ curl http://localhost:#{$port}/v1/apps/#{app}/push/{message}/{pid}
+    <% } %>
+    Note:
+    param1 (message): push notification message you want to send, remember the message should be html escaped
+    param2 (pid    ): unique string to mark the message, for example current timestamp or md5/sha1 digest
+	</pre>
+

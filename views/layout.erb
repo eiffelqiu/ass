@@ -1,8 +1,29 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title><%= title %></title>
-</head>
-<body>
-	<%= yield %>
-</body>
+  <head>
+    <title>Apple Service Server</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+      <div class="container">
+
+        <!-- Main hero unit for a primary marketing message or call to action -->
+        <div class="hero-unit">
+			<%= yield %>
+          <p><a href="https://github.com/eiffelqiu/ass" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+        </div>
+
+
+        <hr>
+
+        <footer>
+          <p>&copy; likenote.com 2012</p>
+        </footer>
+
+      </div> <!-- /container -->	  
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
 </html>
+
