@@ -90,7 +90,11 @@ Push Notification Service: Enabled
 Mode: #{$mode}
 Port: #{$port}
 END
+  html << "#{'*'*80}"
   html << "Cron Job: '#{Dir.pwd}/#{$cron}' script is running every #{$timer} #{($timer == 1) ? 'minute' : 'minutes'} " unless "#{$timer}".to_i == 0
+  html << "\n"
+  html << "access http://localhost:#{$port}/ for more information"
+  html << "\n"
   html << "#{'*'*80}"
   puts html
 end

@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "ass"
-  s.version = "0.0.11"
+  s.version = "0.0.13"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eiffel Qiu"]
-  s.date = "2012-09-19"
+  s.date = "2012-10-04"
   s.description = "Apple Service Server written with Sinatra and Sequel(Sqlite3)"
   s.email = "eiffelqiu@gmail.com"
   s.executables = ["ass"]
@@ -23,13 +23,23 @@ Gem::Specification.new do |s|
     "VERSION",
     "ass.yml",
     "cron",
-    "lib/ass.rb"
+    "lib/ass.rb",
+    "public/css/bootstrap-responsive.css",
+    "public/css/bootstrap-responsive.min.css",
+    "public/css/bootstrap.css",
+    "public/css/bootstrap.min.css",
+    "public/img/glyphicons-halflings-white.png",
+    "public/img/glyphicons-halflings.png",
+    "public/js/bootstrap.js",
+    "public/js/bootstrap.min.js",
+    "views/index.erb",
+    "views/layout.erb"
   ]
   s.homepage = "http://github.com/eiffelqiu/ass"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "ass"
-  s.rubygems_version = "1.8.21"
+  s.rubygems_version = "1.8.24"
   s.summary = "Apple Service Server"
 
   if s.respond_to? :specification_version then

@@ -63,6 +63,7 @@ under the current directory, provide single pem file combined with certificate a
 * start ass server, default port is 4567 (sinatra's default port)
 
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture1.png)
+![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture2.png)
 
 Configuration (ass.yml)
 =======
