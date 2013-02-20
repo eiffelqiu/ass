@@ -109,7 +109,7 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
   $DB.create_table :tokens do
     primary_key :id
     String :app, :unique => false, :null => false
-    String :token, :unique => true, :null => false, :size => 100
+    String :token, :unique => false, :null => false, :size => 100
     index [:app, :token]
   end
 
@@ -169,7 +169,7 @@ class App < Sinatra::Base
   $apps.each { |app|
     get "/v1/apps/#{app}/:token" do
       puts "[#{params[:token]}] was added to '#{app}'"
-      o = Token.first(:token => params[:token])
+      o = Token.first(:app => app , :token => params[:token])
       unless o
         Token.insert(
             :app => app,
