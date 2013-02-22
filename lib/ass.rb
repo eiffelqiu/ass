@@ -177,6 +177,53 @@ class App < Sinatra::Base
         )
       end
     end
+    
+    post "/v1/apps/#{app}/push" do
+      message = CGI::unescape(params[:alert])
+      badge = CGI::unescape(params[:badge])
+      sound = CGI::unescape(params[:sound])
+      extra = CGI::unescape(params[:extra])
+      
+      puts "#{badge} : #{message} extra: #{extra}" if "#{$mode}".strip == 'development' 
+      pid = params[:pid]
+
+      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development' 
+
+      @push = Token.where(:app => app)
+      @exist = Push.first(:pid => pid)
+
+      unless @exist
+        openSSLContext = $certkey["#{app}"]
+        # Connect to port 2195 on the server.
+        sock = nil
+        if $mode == 'production' then
+          sock = TCPSocket.new('gateway.push.apple.com', 2195)
+        else
+          sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
+        end
+        # do our SSL handshaking
+        sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
+        sslSocket.connect
+        #Push.create( :pid => pid )
+        Push.insert(:pid => pid)
+        # write our packet to the stream
+        @push.each do |o|
+          tokenText = o[:token]
+          # pack the token to convert the ascii representation back to binary
+          tokenData = [tokenText].pack('H*')
+          # construct the payload
+          po = {:aps => {:alert => "#{message}", :badge => "#{badge}", :sound => "#{sound}" }, :extra => "#{extra}" }
+          payload = ActiveSupport::JSON.encode(po)
+          # construct the packet
+          packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
+          # read our certificate and set up our SSL context
+          sslSocket.write(packet)
+        end
+        # cleanup
+        sslSocket.close
+        sock.close
+      end
+    end    
 
     get "/v1/apps/#{app}/push/:message/:pid" do
       message = CGI::unescape(params[:message])

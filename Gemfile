@@ -11,7 +11,7 @@ source "http://gems.github.com"
 group :development do
   gem "shoulda", ">= 0"
   gem "rdoc", "~> 3.12"
-  gem "bundler", "~> 1.1.3"
+  gem "bundler"
   gem "jeweler", "~> 1.8.4"
 end
 
