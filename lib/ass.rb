@@ -168,7 +168,7 @@ class App < Sinatra::Base
 
   $apps.each { |app|
     get "/v1/apps/#{app}/:token" do
-      puts "[#{params[:token]}] was added to '#{app}'"
+      puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development' 
       o = Token.first(:app => app , :token => params[:token])
       unless o
         Token.insert(
@@ -180,10 +180,10 @@ class App < Sinatra::Base
 
     get "/v1/apps/#{app}/push/:message/:pid" do
       message = CGI::unescape(params[:message])
-      puts message
+      puts message if "#{$mode}".strip == 'development' 
       pid = params[:pid]
 
-      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]"
+      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development' 
 
       @push = Token.where(:app => app)
       @exist = Push.first(:pid => pid)
