@@ -17,6 +17,7 @@ end
 
 gem 'sqlite3'
 gem 'thin'
+gem 'json'
 gem 'sinatra'
 gem 'sequel'
 gem 'rufus-scheduler'

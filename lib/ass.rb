@@ -13,6 +13,7 @@ require 'sinatra/base'
 require 'yaml'
 require 'uri-handler'
 require 'active_support'
+require 'json'
 
 ############################################################
 ## Initilization Setup
@@ -167,6 +168,8 @@ class App < Sinatra::Base
   end
 
   $apps.each { |app|
+    
+    ## register token api
     get "/v1/apps/#{app}/:token" do
       puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development' 
       o = Token.first(:app => app , :token => params[:token])
@@ -178,17 +181,19 @@ class App < Sinatra::Base
       end
     end
     
+    ## http POST method push api
     post "/v1/apps/#{app}/push" do
-      puts "posting ...."
-      message = CGI::unescape(params[:alert]) || ""
-      badge = params[:badge].to_i || 1
-      sound = CGI::unescape(params[:sound]) || ""
-      extra = CGI::unescape(params[:extra]) || ""
+      message = CGI::unescape(params[:alert] || "")
+      badge =  1
+      puts "params[:badge] = [#{params[:badge]}]"
+      badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
+      sound = CGI::unescape(params[:sound] || "") 
+      extra = CGI::unescape(params[:extra] || "")
       
       puts "#{badge} : #{message} extra: #{extra}" if "#{$mode}".strip == 'development' 
       pid = params[:pid]
 
-      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development' 
+      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}], badge:#{badge} , sound: #{sound}, extra:#{extra}" if "#{$mode}".strip == 'development' 
 
       @push = Token.where(:app => app)
       @exist = Push.first(:pid => pid)
@@ -226,6 +231,7 @@ class App < Sinatra::Base
       end
     end    
 
+    ## http GET method push api
     get "/v1/apps/#{app}/push/:message/:pid" do
       message = CGI::unescape(params[:message])
       puts message if "#{$mode}".strip == 'development' 
