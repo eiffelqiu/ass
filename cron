@@ -1,11 +1,12 @@
+#encoding: utf-8
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
 
 require 'rubygems'
 require 'yaml'
 require 'cgi'
 require 'digest/sha2'
 require 'uri-handler'
+require 'net/http'
 
 ###########################################################################
 ####
@@ -26,13 +27,20 @@ $apps = config['apps'] || []
 ## Using curl command to send push notification message
 ############################################################
 
-@message = CGI::escape("This is an push notification message sent by ASS".to_uri)
+@message = "This is an push notification message sent by ASS" # CGI::escape("This is an push notification message sent by ASS".to_uri)
 
 #@pid = Digest::SHA2.hexdigest("#{Time.now.to_i}")
 @pid = "#{Time.now.to_i}"
 
 $apps.each { |app|
   sleep 1
-  puts "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{@message}/#{@pid}"
-  system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{@message}/#{@pid}"
+#  system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{@message}/#{@pid}"
+begin  
+  url = URI.parse("http://192.168.2.93:#{$port}/v1/apps/#{app}/push")
+  post_args1 = { :alert => "#{@message}", :pid => "#{@pid}" }
+  puts url
+  Net::HTTP.post_form(url, post_args1) 
+rescue =>err  
+  puts "#{err.class} ##{err}"  
+end  
 }

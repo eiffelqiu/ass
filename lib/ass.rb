@@ -179,10 +179,11 @@ class App < Sinatra::Base
     end
     
     post "/v1/apps/#{app}/push" do
-      message = CGI::unescape(params[:alert])
-      badge = CGI::unescape(params[:badge])
-      sound = CGI::unescape(params[:sound])
-      extra = CGI::unescape(params[:extra])
+      puts "posting ...."
+      message = CGI::unescape(params[:alert]) || ""
+      badge = params[:badge].to_i || 1
+      sound = CGI::unescape(params[:sound]) || ""
+      extra = CGI::unescape(params[:extra]) || ""
       
       puts "#{badge} : #{message} extra: #{extra}" if "#{$mode}".strip == 'development' 
       pid = params[:pid]
@@ -212,7 +213,7 @@ class App < Sinatra::Base
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
           # construct the payload
-          po = {:aps => {:alert => "#{message}", :badge => "#{badge}", :sound => "#{sound}" }, :extra => "#{extra}" }
+          po = {:aps => {:alert => "#{message}", :badge => badge , :sound => "#{sound}" }, :extra => "#{extra}" }
           payload = ActiveSupport::JSON.encode(po)
           # construct the packet
           packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
