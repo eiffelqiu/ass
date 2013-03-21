@@ -46,6 +46,8 @@ $mode = config['mode'] || env
 $VERSION = File.open("#{ROOTDIR}/VERSION", "rb").read
 $apps = config['apps'] || []
 $log = config['log'] || 'off'
+$user = config['user'] || 'admin'
+$pass = config['pass'] || 'pass'
 
 ############################################################
 ## Certificate Key Setup
@@ -147,7 +149,19 @@ class App < Sinatra::Base
   set :root, File.expand_path('../../', __FILE__)
   set :port, "#{$port}".to_i
   set :public_folder, File.dirname(__FILE__) + '/../public'
-  set :views, File.dirname(__FILE__) + '/../views'    
+  set :views, File.dirname(__FILE__) + '/../views'   
+  
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ["#{$user}","#{$pass}"]
+  end
+
+  def protected!
+    unless authorized?
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Oops... we need your login name & password\n"])
+    end
+  end
 
   configure :production, :development do
     if "#{$log}".strip == 'on' then
@@ -162,6 +176,12 @@ class App < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
   end
+  
+  get "/v1/apps/#{app}/" do
+    protected!
+    @o = Token.all(:app => app)
+    erb :list
+  end  
 
   get '/' do
     erb :index
