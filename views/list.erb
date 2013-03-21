@@ -1,9 +1,21 @@
-<h1>Apple Service Server (<%= $VERSION %>) </h1>
 <hr>
-<p/>
-<p>
-	<% @o.each { |data| %>
-		#{data.token}
-	<% } %>
-<p/>
+
+<table class="table table-striped table-bordered table-condensed">
+	<table>
+	    <thead>
+	        <tr>
+	            <th>app</th>
+	            <th>device token</th>
+	        </tr>
+	    </thead>
+		<% @o.each { |data| %>
+	    <tbody>
+	        <tr>
+	            <td>#{data.app}</td>
+	            <td>#{data.token}</td>
+	        </tr>
+	    </tbody>
+		<% } %>
+</table>
+
 <hr>	

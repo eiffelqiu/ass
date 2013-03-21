@@ -177,9 +177,9 @@ class App < Sinatra::Base
     set :dump_errors, false
   end
   
-  get "/v1/apps/#{app}/" do
+  get "/v1/apps/admin/:app" do
     protected!
-    @o = Token.all(:app => app)
+    @o = Token.where(:app => params[:app])
     erb :list
   end  
 
