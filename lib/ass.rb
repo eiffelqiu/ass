@@ -74,7 +74,7 @@ end
 
 unless check_cert then
   html = <<-END
-1: please provide certificate key pem file under current directory, name should be: appid_dev.pem for development and appid_prod.pem for production
+1: please provide certificate key pem file under current directory, name should be: appid_development.pem for development and appid_production.pem for production
 2: edit your ass.yml under current directory
 3: run ass
 4: iOS Client: in AppDelegate file, didRegisterForRemoteNotificationsWithDeviceToken method should access url below:
