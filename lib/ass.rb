@@ -177,11 +177,19 @@ class App < Sinatra::Base
     set :dump_errors, false
   end
   
-  get "/v1/apps/admin/:app" do
+  get "/v1/apps/admin/:app/tokens" do
     protected!
+    #@o = Token.where(:app => params[:app])
     @o = Token.where(:app => params[:app])
-    erb :list
+    erb :tokens
   end  
+  
+  get "/v1/apps/admin/:app/pushes" do
+    protected!
+    #@o = Token.where(:app => params[:app])
+    @o = Push.where(:app => params[:app])
+    erb :pushes
+  end    
 
   get '/' do
     erb :index

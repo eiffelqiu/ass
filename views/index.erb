@@ -23,4 +23,13 @@
     param1 (message): push notification message you want to send, remember the message should be html escaped
     param2 (pid    ): unique string to mark the message, for example current timestamp or md5/sha1 digest
 	</pre>
-
+	<hr>	
+	<p>
+		admin site:
+	</p>
+	<p>
+    <% $apps.each { |app| %>
+    <a href="http://localhost:4567/v1/apps/admin/<%= app %>/tokens" class="btn btn-primary btn-large"><%= app %></a> 
+    <% } %>		
+	</p>
+	<hr>

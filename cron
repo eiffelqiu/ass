@@ -32,15 +32,20 @@ $apps = config['apps'] || []
 #@pid = Digest::SHA2.hexdigest("#{Time.now.to_i}")
 @pid = "#{Time.now.to_i}"
 
+
+## get api 
 $apps.each { |app|
   sleep 1
 #  system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{@message}/#{@pid}"
+}
+
+## post api 
 begin  
-  url = URI.parse("http://192.168.2.93:#{$port}/v1/apps/#{app}/push")
+  url = URI.parse("http://localhost:#{$port}/v1/apps/#{app}/push")
   post_args1 = { :alert => "#{@message}", :pid => "#{@pid}" }
   puts url
   Net::HTTP.post_form(url, post_args1) 
 rescue =>err  
   puts "#{err.class} ##{err}"  
 end  
-}
+

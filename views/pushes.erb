@@ -1,21 +1,20 @@
 <hr>
 
 <table class="table table-striped table-bordered table-condensed">
-	<table>
 	    <thead>
 	        <tr>
 	            <th>app</th>
 	            <th>device token</th>
 	        </tr>
 	    </thead>
-		<% @o.each { |data| %>
 	    <tbody>
+				 <% @o.each { |x| %>
 	        <tr>
-	            <td>#{data.app}</td>
-	            <td>#{data.token}</td>
+	            <td><%= x[:id] %></td>
+	            <td><%= x[:pid] %></td>
 	        </tr>
+				<% } %>					
 	    </tbody>
-		<% } %>
 </table>
 
 <hr>	
