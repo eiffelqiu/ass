@@ -179,16 +179,15 @@ class App < Sinatra::Base
   
   get "/v1/apps/admin/:app/tokens" do
     protected!
-    #@o = Token.where(:app => params[:app])
     @o = Token.where(:app => params[:app])
-    erb :tokens
+    erb :tokens, :layout => :article_layout
   end  
   
   get "/v1/apps/admin/:app/pushes" do
     protected!
     #@o = Token.where(:app => params[:app])
-    @o = Push.where(:app => params[:app])
-    erb :pushes
+    @o = Push.all
+    erb :pushes, :layout => :article_layout
   end    
 
   get '/' do
