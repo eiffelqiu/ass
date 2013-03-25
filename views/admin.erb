@@ -1,5 +1,17 @@
+ <div class="btn-toolbar" style="margin: 0;">
+    <div class="btn-group">
+      <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">Tables<span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="/v1/admin/token">Tokens</a></li>
+        <li><a href="/v1/admin/push">Pushes</a></li>
+      </ul>
+    </div><!-- /btn-group -->
+    <div class="btn-group">
+        <button class="btn btn-success">Tokens</button>
+    </div><!-- /btn-group -->    
+</div>
+<hr>
 <div class="tabbable">
-
   <ul class="nav nav-tabs">
     <% $apps.each_with_index { |app, index| %>
         <% if (index == 0) then %>
@@ -9,8 +21,6 @@
         <% end %>
     <% } %>
   </ul>
-
-
   <div class="tab-content">
     <% $apps.each_with_index { |app, index| %>
         <% if (index == 0) then %>
@@ -29,9 +39,9 @@
           <tbody>
           <% @o["#{index}".to_i].each { |x| %>
               <tr>
-                <td><%= x.values[2] %></td>
-                <td><%= x.values[1] %></td>
                 <td><%= x.values[0] %></td>
+                <td><%= x.values[1] %></td>
+                <td><%= x.values[2] %></td>
               </tr>
           <% } %>
           </tbody>
@@ -39,5 +49,4 @@
         </div>
     <% } %>
     </div>
-
-  </div>
+</div>

@@ -122,7 +122,7 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
     String :pid, :unique => true, :null => false, :size => 100
     String :message, :unique => false, :null => false, :size => 107
     Time :created_at
-    index :pid
+    index [:pid, :message]
   end
 else
   $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass.db")
@@ -180,27 +180,6 @@ class App < Sinatra::Base
     set :dump_errors, false
   end
 
-  get "/v1/admin" do
-    protected!
-    @o = []
-    $apps.each_with_index { |app, index|
-      @o << Token.where(:app => app)
-    }
-    erb :app, :layout => :article_layout
-  end
-
-  get "/v1/apps/admin/:app/tokens" do
-    protected!
-    @o = Token.where(:app => params[:app])
-    erb :tokens, :layout => :article_layout
-  end
-
-  get "/v1/apps/admin/:app/pushes" do
-    protected!
-    @o = Push.all
-    erb :pushes, :layout => :article_layout
-  end
-
   get '/' do
     erb :index
   end
@@ -208,6 +187,34 @@ class App < Sinatra::Base
   get '/about' do
     erb :about
   end
+
+  get "/v1/admin" do
+    protected!
+    @o = []
+    $apps.each_with_index { |app, index|
+      @o << Token.where(:app => app)
+    }
+    erb :admin
+  end  
+
+  get "/v1/admin/:db" do
+    protected!
+    db = params[:db]
+    if (db == 'token') then
+      @o = []
+      $apps.each_with_index { |app, index|
+        @o << Token.where(:app => app)
+      }
+      erb :token
+    end
+    if (db == 'push') then 
+      @o = []
+      $apps.each_with_index { |app, index|
+        @o << Token.where(:app => app)
+      }
+      erb :push
+    end
+  end    
 
   $apps.each { |app|
 
@@ -276,6 +283,7 @@ class App < Sinatra::Base
 
     ## http GET method push api
     get "/v1/apps/#{app}/push/:message/:pid" do
+      protected! unless request.host == 'localhost'
       message = CGI::unescape(params[:message])
       puts message if "#{$mode}".strip == 'development'
       pid = params[:pid]
