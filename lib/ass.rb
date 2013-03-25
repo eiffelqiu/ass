@@ -113,12 +113,15 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
     primary_key :id
     String :app, :unique => false, :null => false
     String :token, :unique => false, :null => false, :size => 100
+    Time :created_at
     index [:app, :token]
   end
 
   $DB.create_table :pushes do
     primary_key :id
     String :pid, :unique => true, :null => false, :size => 100
+    String :message, :unique => false, :null => false, :size => 107
+    Time :created_at
     index :pid
   end
 else
