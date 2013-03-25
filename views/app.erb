@@ -1,43 +1,43 @@
-<div class="tabbable"> 
+<div class="tabbable">
 
   <ul class="nav nav-tabs">
-  <% $apps.each_with_index { |app, index| %>    
-  <% if (index == 0) then %>
-    <li class="active"><a href="#tab<%= index+1 %>" data-toggle="tab"> <%= app %></a></li>
-  <% else %>
-    <li><a href="#tab<%= index+1 %>" data-toggle="tab"> <%= app %></a></li>
-  <% end %>
-  <% } %>  
+    <% $apps.each_with_index { |app, index| %>
+        <% if (index == 0) then %>
+            <li class="active"><a href="#tab<%= index+1 %>" data-toggle="tab"> <%= app %></a></li>
+        <% else %>
+            <li><a href="#tab<%= index+1 %>" data-toggle="tab"> <%= app %></a></li>
+        <% end %>
+    <% } %>
   </ul>
-    
-  
+
+
   <div class="tab-content">
-    <% $apps.each_with_index { |app, index| %>  
-    <% if (index == 0) then %>
-      <div class="tab-pane active" id="tab<%= index+1 %>">
-    <% else %>
-      <div class="tab-pane" id="tab<%= index+1 %>">
-    <% end %>
-    <table class="table-striped table-bordered table-condensed">
+    <% $apps.each_with_index { |app, index| %>
+        <% if (index == 0) then %>
+            <div class="tab-pane active" id="tab<%= index+1 %>">
+        <% else %>
+            <div class="tab-pane" id="tab<%= index+1 %>">
+        <% end %>
+        <table class="table-striped table-bordered table-condensed">
           <thead>
-              <tr>
-                  <th>id</th>
-                  <th>app</th>
-                  <th>device token</th>
-              </tr>
+          <tr>
+            <th>id</th>
+            <th>app</th>
+            <th>device token</th>
+          </tr>
           </thead>
           <tbody>
           <% @o["#{index}".to_i].each { |x| %>
               <tr>
-                  <td><%= x.values[2] %></td>
-                  <td><%= x.values[1]  %></td>
-                  <td><%= x.values[0]  %></td>
+                <td><%= x.values[2] %></td>
+                <td><%= x.values[1] %></td>
+                <td><%= x.values[0] %></td>
               </tr>
-          <% } %>     
+          <% } %>
           </tbody>
-    </table>
+        </table>
+        </div>
+    <% } %>
     </div>
-    <% } %> 
-  </div>
 
-</div>
+  </div>

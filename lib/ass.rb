@@ -78,11 +78,11 @@ unless check_cert then
 2: edit your ass.yml under current directory
 3: run ass
 4: iOS Client: in AppDelegate file, didRegisterForRemoteNotificationsWithDeviceToken method should access url below:
-END
+  END
   $apps.each { |app|
     html << "'#{app}'s registration url:  http://serverIP:#{$port}/v1/apps/#{app}/DeviceToken"
   }
-  html <<  "5: Server: cron should access 'curl http://localhost:#{$port}/v1/app/push/{messages}/{pid}' to send push message"
+  html << "5: Server: cron should access 'curl http://localhost:#{$port}/v1/app/push/{messages}/{pid}' to send push message"
   puts html
   exit
 else
@@ -92,7 +92,7 @@ Apple Service Server(#{$VERSION}) is Running ...
 Push Notification Service: Enabled
 Mode: #{$mode}
 Port: #{$port}
-END
+  END
   html << "#{'*'*80}"
   html << "Cron Job: '#{Dir.pwd}/#{$cron}' script is running every #{$timer} #{($timer == 1) ? 'minute' : 'minutes'} " unless "#{$timer}".to_i == 0
   html << "\n"
@@ -148,15 +148,15 @@ end
 ############################################################
 
 class App < Sinatra::Base
-  
+
   set :root, File.expand_path('../../', __FILE__)
   set :port, "#{$port}".to_i
   set :public_folder, File.dirname(__FILE__) + '/../public'
-  set :views, File.dirname(__FILE__) + '/../views'   
-  
+  set :views, File.dirname(__FILE__) + '/../views'
+
   def authorized?
-    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ["#{$user}","#{$pass}"]
+    @auth ||= Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ["#{$user}", "#{$pass}"]
   end
 
   def protected!
@@ -168,9 +168,9 @@ class App < Sinatra::Base
 
   configure :production, :development do
     if "#{$log}".strip == 'on' then
-      enable :logging 
+      enable :logging
     end
-  end  
+  end
 
   if "#{$mode}".strip == 'development' then
     set :show_exceptions, true
@@ -187,19 +187,19 @@ class App < Sinatra::Base
       @o << Token.where(:app => app)
     }
     erb :app, :layout => :article_layout
-  end    
-  
+  end
+
   get "/v1/apps/admin/:app/tokens" do
     protected!
     @o = Token.where(:app => params[:app])
     erb :tokens, :layout => :article_layout
-  end  
-  
+  end
+
   get "/v1/apps/admin/:app/pushes" do
     protected!
     @o = Push.all
     erb :pushes, :layout => :article_layout
-  end    
+  end
 
   get '/' do
     erb :index
@@ -207,14 +207,14 @@ class App < Sinatra::Base
 
   get '/about' do
     erb :about
-  end  
+  end
 
   $apps.each { |app|
-    
+
     ## register token api
     get "/v1/apps/#{app}/:token" do
-      puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development' 
-      o = Token.first(:app => app , :token => params[:token])
+      puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development'
+      o = Token.first(:app => app, :token => params[:token])
       unless o
         Token.insert(
             :app => app,
@@ -222,21 +222,21 @@ class App < Sinatra::Base
         )
       end
     end
-    
+
     ## http POST method push api
     post "/v1/apps/#{app}/push" do
-      protected! unless request.host == 'localhost'    
+      protected! unless request.host == 'localhost'
       message = CGI::unescape(params[:alert] || "")[0..107]
-      badge =  1
+      badge = 1
       puts "params[:badge] = [#{params[:badge]}]"
       badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
-      sound = CGI::unescape(params[:sound] || "") 
+      sound = CGI::unescape(params[:sound] || "")
       extra = CGI::unescape(params[:extra] || "")
-      
-      puts "#{badge} : #{message} extra: #{extra}" if "#{$mode}".strip == 'development' 
+
+      puts "#{badge} : #{message} extra: #{extra}" if "#{$mode}".strip == 'development'
       pid = params[:pid]
 
-      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}], badge:#{badge} , sound: #{sound}, extra:#{extra}" if "#{$mode}".strip == 'development' 
+      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}], badge:#{badge} , sound: #{sound}, extra:#{extra}" if "#{$mode}".strip == 'development'
 
       @push = Token.where(:app => app)
       @exist = Push.first(:pid => pid)
@@ -261,7 +261,7 @@ class App < Sinatra::Base
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
           # construct the payload
-          po = {:aps => {:alert => "#{message}", :badge => badge , :sound => "#{sound}" }, :extra => "#{extra}" }
+          po = {:aps => {:alert => "#{message}", :badge => badge, :sound => "#{sound}"}, :extra => "#{extra}"}
           payload = ActiveSupport::JSON.encode(po)
           # construct the packet
           packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
@@ -272,15 +272,15 @@ class App < Sinatra::Base
         sslSocket.close
         sock.close
       end
-    end    
+    end
 
     ## http GET method push api
     get "/v1/apps/#{app}/push/:message/:pid" do
       message = CGI::unescape(params[:message])
-      puts message if "#{$mode}".strip == 'development' 
+      puts message if "#{$mode}".strip == 'development'
       pid = params[:pid]
 
-      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development' 
+      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development'
 
       @push = Token.where(:app => app)
       @exist = Push.first(:pid => pid)
