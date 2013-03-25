@@ -176,6 +176,15 @@ class App < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
   end
+
+  get "/v1/admin" do
+    protected!
+    @o = []
+    $apps.each_with_index { |app, index|
+      @o << Token.where(:app => app)
+    }
+    erb :app, :layout => :article_layout
+  end    
   
   get "/v1/apps/admin/:app/tokens" do
     protected!
@@ -185,7 +194,6 @@ class App < Sinatra::Base
   
   get "/v1/apps/admin/:app/pushes" do
     protected!
-    #@o = Token.where(:app => params[:app])
     @o = Push.all
     erb :pushes, :layout => :article_layout
   end    
@@ -193,6 +201,10 @@ class App < Sinatra::Base
   get '/' do
     erb :index
   end
+
+  get '/about' do
+    erb :about
+  end  
 
   $apps.each { |app|
     
@@ -210,7 +222,8 @@ class App < Sinatra::Base
     
     ## http POST method push api
     post "/v1/apps/#{app}/push" do
-      message = CGI::unescape(params[:alert] || "")
+      protected! unless request.host == 'localhost'    
+      message = CGI::unescape(params[:alert] || "")[0..107]
       badge =  1
       puts "params[:badge] = [#{params[:badge]}]"
       badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
