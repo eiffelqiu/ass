@@ -200,17 +200,10 @@ class App < Sinatra::Base
   get "/v1/admin/:db" do
     protected!
     db = params[:db]
-    if (db == 'token') then
-      @o = []
-      $apps.each_with_index { |app, index|
-        @o << Token.where(:app => app)
-      }
-      erb :token
-    end
     if (db == 'push') then 
-      @o = []
+      @p = []
       $apps.each_with_index { |app, index|
-        @o << Token.where(:app => app)
+        @p << Push.all
       }
       erb :push
     end
