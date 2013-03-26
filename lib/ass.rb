@@ -14,6 +14,8 @@ require 'yaml'
 require 'uri-handler'
 require 'active_support'
 require 'json'
+require 'will_paginate'
+require 'will_paginate/sequel'  # or data_mapper/sequel
 
 ############################################################
 ## Initilization Setup
@@ -120,6 +122,7 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
   $DB.create_table :pushes do
     primary_key :id
     String :pid, :unique => true, :null => false, :size => 100
+    String :app, :unique => true, :null => false, :size => 30
     String :message, :unique => false, :null => false, :size => 107
     Time :created_at
     index [:pid, :message]
@@ -128,8 +131,22 @@ else
   $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass.db")
 end
 
-Token = $DB[:tokens]
-Push = $DB[:pushes]
+WillPaginate.per_page = 10
+
+# Token = $DB[:tokens]
+# Push = $DB[:pushes]
+
+class Token < Sequel::Model
+  Sequel.extension :pagination
+
+  # here is your code
+end
+
+class Push < Sequel::Model
+  Sequel.extension :pagination
+
+  # here is your code
+end
 
 ############################################################
 ## Timer Job Setup
@@ -188,26 +205,25 @@ class App < Sinatra::Base
     erb :about
   end
 
-  get "/v1/admin" do
-    protected!
-    @o = []
-    $apps.each_with_index { |app, index|
-      @o << Token.where(:app => app)
-    }
-    erb :admin
-  end  
-
   get "/v1/admin/:db" do
     protected!
-    db = params[:db]
-    if (db == 'push') then 
+    db = params[:db] || 'token'
+    page = 1
+    page = params[:page].to_i if params[:page]
+    if (db == 'token') then 
+      @o = []
+      $apps.each_with_index { |app, index|
+        @o << Token.where(:app => app).paginate(page, 10)
+      }
+      erb :token
+    else
       @p = []
       $apps.each_with_index { |app, index|
-        @p << Push.all
+        @p << Push.where(:app => app).paginate(page, 10)
       }
       erb :push
     end
-  end    
+  end  
 
   $apps.each { |app|
 

@@ -4,11 +4,11 @@
     
     In AppDelegate file, inside didRegisterForRemoteNotificationsWithDeviceToken method access url below to register device token:
 
-    '#{app}':  http://serverIP:<%= $port %>/v1/apps/yourapp/DeviceToken
+    '#{app}':  http://serverIP:<%= $port %>/v1/apps/{yourapp}/DeviceToken
 
     2: How to send push notification? (Server Side)
 
-    $ curl http://localhost:<%= $port %>/v1/apps/yourapp/push/{message}/{pid}
+    $ curl http://localhost:<%= $port %>/v1/apps/{yourapp}/push/{message}/{pid}
 
     Note:
     param1 (message): push notification message you want to send, remember the message should be html escaped

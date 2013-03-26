@@ -32,20 +32,33 @@
           <thead>
           <tr>
             <th>id</th>
+            <th>pid</th>
             <th>app</th>
-            <th>device token</th>
+            <th>message</th>
+            <th>created time</th>
           </tr>
           </thead>
           <tbody>
-          <% @o["#{index}".to_i].each { |x| %>
+          <% @p["#{index}".to_i].each { |x| %>
               <tr>
-                <td><%= x.values[0] %></td>
-                <td><%= x.values[1] %></td>
-                <td><%= x.values[2] %></td>
+                <td><%= x.id %></td>
+                <td><%= x.pid %></td>
+                <td><%= x.app %></td>
+                <td><%= x.message %></td>   
+                <td><%= x.created_at %></td>                 
               </tr>
           <% } %>
           </tbody>
         </table>
+<div class="pagination">
+  <ul>
+    <li><a href="#">Prev</a></li>
+    <li><a href="/v1/admin/token?page=1">1</a></li>
+    <li><a href="/v1/admin/token?page=2">2</a></li>
+    <li><a href="/v1/admin/token?page=3">3</a></li>
+    <li><a href="#">Next</a></li>
+  </ul>
+</div>            
         </div>
     <% } %>
     </div>

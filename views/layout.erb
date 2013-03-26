@@ -2,31 +2,42 @@
 <html>
 <head>
   <title>Apple Service Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Apple Service Server">
+  <meta name="author" content="eiffel.q">  
   <!-- Bootstrap -->
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">  
+  <style type="text/css">
+      footer {
+        height: 60px;
+        background-color: #f5f5f5;   
+      }
+  </style>
   <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
   <link rel="icon" href="/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
 </head>
 <body>
 <div class="container">
-<div class="navbar navbar-inverse">
+<div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
     <a class="brand" href="#">Apple Service Server (<%= $VERSION %>)</a>
     <ul class="nav">
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
-      <li><a href="/v1/admin">Admin</a></li>
+      <li><a href="/v1/admin/token">Admin</a></li>
     </ul>
   </div>
 </div>
-  <!-- Main hero unit for a primary marketing message or call to action -->
-  <div class="hero-unit">
-    <%= yield %>
-  </div>
-  <footer>
-    <p>&copy; likenote.com 2013</p>
-  </footer>
+<!-- Main hero unit for a primary marketing message or call to action -->
+<div class="hero-unit">
+  <%= yield %>
 </div>
+</div>
+<footer id="footer">
+  <div class="container">
+    <p><a href="https://github.com/eiffelqiu/">github.com/eiffelqiu</a>   2013</p>
+  </div>
+</footer>  
 <!-- /container -->
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="/js/bootstrap.min.js"></script>
