@@ -230,13 +230,13 @@ class App < Sinatra::Base
     if (db == 'token') then 
       @o = []
       $apps.each_with_index { |app, index|
-        @o << Token.where(:app => app).paginate(page, 20)
+        @o << Token.where(:app => app).order(:id).reverse.paginate(page, 20)
       }
       erb :token
     else
       @p = []
       $apps.each_with_index { |app, index|
-        @p << Push.where(:app => app).paginate(page, 20)
+        @p << Push.where(:app => app).order(:id).reverse.paginate(page, 20)
       }
       erb :push
     end
