@@ -1,3 +1,26 @@
+<h4> Sending Message: </h4>
+<form class="form-inline" action="/v1/send"  method="post" >
+  <label class="text-error">
+    http://localhost:4567/send/
+  </label>  
+<div class="input-prepend">
+  <span class="add-on">app</span>
+  <select name="app">
+      <% $apps.each_with_index { |app, index| %>      
+        <option><%= app %></option>
+      <% } %>  
+  </select>    
+</div>  
+  <label class="label">
+    /
+  </label>  
+<div class="input-prepend">
+  <span class="add-on">message</span>   
+  <input name="message" type="text" class="input-block-level" placeholder="message">
+  <button type="submit" class="btn btn-primary">Send</button>
+</div>    
+</form>
+<hr/>
  <div class="btn-toolbar" style="margin: 0;">
     <div class="btn-group">
       <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">Tables<span class="caret"></span></button>
@@ -10,7 +33,7 @@
         <button class="btn btn-success">Tokens</button>
     </div><!-- /btn-group -->    
 </div>
-<hr>
+<hr style="border: none;">
 <div class="tabbable">
   <ul class="nav nav-tabs">
     <% $apps.each_with_index { |app, index| %>
@@ -57,33 +80,8 @@
     <li><a href="#">Next</a></li>
   </ul>
 </div>    -->     
-<%# will_paginate @o["#{index}".to_i] %>
         </div>
     <% } %>
     </div>
 </div>
-<hr/>
-<h4> test sending push notification: </h4>
-<form class="form-inline" action="/v1/send"  method="post" >
-  <label class="label">
-    http://localhost:4567/send/
-  </label>  
-<div class="input-prepend">
-  <span class="add-on">app</span>
-  <select name="app">
-      <% $apps.each_with_index { |app, index| %>      
-        <option><%= app %></option>
-      <% } %>  
-  </select>    
-</div>  
 
-  <label class="label">
-    /
-  </label>  
-<div class="input-prepend">
-  <span class="add-on">message</span>   
-  <input name="message" type="text" class="input-block-level" placeholder="message">
-  <button type="submit" class="btn btn-primary">Send</button>
-</div>    
-  
-</form>

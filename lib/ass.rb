@@ -217,10 +217,9 @@ class App < Sinatra::Base
     #   Net::HTTP.post_form(url, post_args1) 
     # rescue =>err  
     #   puts "#{err.class} ##{err}"  
-    # end  
-    puts "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{message}/#{pid}"     
+    # end   
     system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{message}/#{pid}"  
-    redirect '/'
+    redirect '/' if (params[:app] and  params[:message])
   end  
 
   get "/v1/admin/:db" do
@@ -231,13 +230,13 @@ class App < Sinatra::Base
     if (db == 'token') then 
       @o = []
       $apps.each_with_index { |app, index|
-        @o << Token.where(:app => app).paginate(page, 10)
+        @o << Token.where(:app => app).paginate(page, 20)
       }
       erb :token
     else
       @p = []
       $apps.each_with_index { |app, index|
-        @p << Push.where(:app => app).paginate(page, 10)
+        @p << Push.where(:app => app).paginate(page, 20)
       }
       erb :push
     end
