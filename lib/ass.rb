@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+#encoding: utf-8
 
 require 'rubygems'
 require 'sinatra'
@@ -12,10 +11,13 @@ require 'eventmachine'
 require 'sinatra/base'
 require 'yaml'
 require 'uri-handler'
+require 'net/http'
 require 'active_support'
 require 'json'
+require 'digest/sha2'
 require 'will_paginate'
 require 'will_paginate/sequel'  # or data_mapper/sequel
+require 'uri' 
 
 ############################################################
 ## Initilization Setup
@@ -204,6 +206,22 @@ class App < Sinatra::Base
   get '/about' do
     erb :about
   end
+
+  post '/v1/send' do
+    app = params[:app]
+    message = CGI::escape(params[:message] || "")   
+    pid = "#{Time.now.to_i}"   
+    # begin  
+    #   url = URI.parse("http://localhost:#{$port}/v1/apps/#{app}/push")
+    #   post_args1 = { :alert => "#{message}".encode('UTF-8'), :pid => "#{pid}" }
+    #   Net::HTTP.post_form(url, post_args1) 
+    # rescue =>err  
+    #   puts "#{err.class} ##{err}"  
+    # end  
+    puts "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{message}/#{pid}"     
+    system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{message}/#{pid}"  
+    redirect '/'
+  end  
 
   get "/v1/admin/:db" do
     protected!
