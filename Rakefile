@@ -33,6 +33,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_dependency 'activesupport', '>= 3.2.8'  
   gem.add_dependency 'uri-handler' 
   gem.add_dependency 'will_paginate', '~> 3.0'
+  gem.add_dependency 'sinatra-contrib'
 
   gem.rubyforge_project = 'ass'
 end

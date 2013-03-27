@@ -18,6 +18,7 @@ require 'digest/sha2'
 require 'will_paginate'
 require 'will_paginate/sequel'  # or data_mapper/sequel
 require 'uri' 
+require 'sinatra/reloader' if development?
 
 ############################################################
 ## Initilization Setup
@@ -207,6 +208,14 @@ class App < Sinatra::Base
     erb :about
   end
 
+  not_found do
+    erb :not_found
+  end  
+
+  error do
+    @error = params['captures'].first.inspect
+  end  
+
   post '/v1/send' do
     app = params[:app]
     message = CGI::escape(params[:message] || "")   
@@ -233,7 +242,8 @@ class App < Sinatra::Base
         @o << Token.where(:app => app).order(:id).reverse.paginate(page, 20)
       }
       erb :token
-    else
+    end
+    if (db == 'push') then 
       @p = []
       $apps.each_with_index { |app, index|
         @p << Push.where(:app => app).order(:id).reverse.paginate(page, 20)
@@ -287,7 +297,7 @@ class App < Sinatra::Base
         sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
         sslSocket.connect
         #Push.create( :pid => pid )
-        Push.insert(:pid => pid)
+        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )
         # write our packet to the stream
         @push.each do |o|
           tokenText = o[:token]
