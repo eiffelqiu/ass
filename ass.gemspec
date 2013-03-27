@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "ass"
-  s.version = "0.0.16"
+  s.version = "0.0.17"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eiffel Qiu"]
-  s.date = "2013-02-25"
+  s.date = "2013-03-27"
   s.description = "Apple Service Server written with Sinatra and Sequel(Sqlite3)"
   s.email = "eiffelqiu@gmail.com"
   s.executables = ["ass"]
@@ -28,12 +28,18 @@ Gem::Specification.new do |s|
     "public/css/bootstrap-responsive.min.css",
     "public/css/bootstrap.css",
     "public/css/bootstrap.min.css",
+    "public/favicon.ico",
     "public/img/glyphicons-halflings-white.png",
     "public/img/glyphicons-halflings.png",
     "public/js/bootstrap.js",
     "public/js/bootstrap.min.js",
+    "views/about.erb",
+    "views/error.erb",
     "views/index.erb",
-    "views/layout.erb"
+    "views/layout.erb",
+    "views/not_found.erb",
+    "views/push.erb",
+    "views/token.erb"
   ]
   s.homepage = "http://github.com/eiffelqiu/ass"
   s.licenses = ["MIT"]
@@ -55,6 +61,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<eventmachine>, [">= 0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 3.2.8"])
       s.add_runtime_dependency(%q<uri-handler>, [">= 0"])
+      s.add_runtime_dependency(%q<will_paginate>, ["~> 3.0"])
+      s.add_runtime_dependency(%q<sinatra-contrib>, [">= 0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
@@ -67,6 +75,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<eventmachine>, [">= 0"])
       s.add_runtime_dependency(%q<activesupport>, [">= 3.2.8"])
       s.add_runtime_dependency(%q<uri-handler>, [">= 0"])
+      s.add_runtime_dependency(%q<will_paginate>, ["~> 3.0"])
+      s.add_runtime_dependency(%q<sinatra-contrib>, [">= 0"])
     else
       s.add_dependency(%q<sqlite3>, [">= 0"])
       s.add_dependency(%q<thin>, [">= 0"])
@@ -77,6 +87,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<eventmachine>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 3.2.8"])
       s.add_dependency(%q<uri-handler>, [">= 0"])
+      s.add_dependency(%q<will_paginate>, ["~> 3.0"])
+      s.add_dependency(%q<sinatra-contrib>, [">= 0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_dependency(%q<bundler>, [">= 0"])
@@ -89,6 +101,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<eventmachine>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 3.2.8"])
       s.add_dependency(%q<uri-handler>, [">= 0"])
+      s.add_dependency(%q<will_paginate>, ["~> 3.0"])
+      s.add_dependency(%q<sinatra-contrib>, [">= 0"])
     end
   else
     s.add_dependency(%q<sqlite3>, [">= 0"])
@@ -100,6 +114,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<eventmachine>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 3.2.8"])
     s.add_dependency(%q<uri-handler>, [">= 0"])
+    s.add_dependency(%q<will_paginate>, ["~> 3.0"])
+    s.add_dependency(%q<sinatra-contrib>, [">= 0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
     s.add_dependency(%q<bundler>, [">= 0"])
@@ -112,6 +128,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<eventmachine>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 3.2.8"])
     s.add_dependency(%q<uri-handler>, [">= 0"])
+    s.add_dependency(%q<will_paginate>, ["~> 3.0"])
+    s.add_dependency(%q<sinatra-contrib>, [">= 0"])
   end
 end
 

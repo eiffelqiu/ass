@@ -213,7 +213,8 @@ class App < Sinatra::Base
   end  
 
   error do
-    @error = params['captures'].first.inspect
+    @error = "";
+    @error = params['captures'].first.inspect if "#{$mode}".strip == 'development'
   end  
 
   post '/v1/send' do
