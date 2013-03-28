@@ -66,7 +66,6 @@ under the current directory, provide single pem file combined with certificate a
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture2.png)
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture3.png)
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture4.png)
-
 Configuration (ass.yml)
 =======
 
@@ -76,6 +75,8 @@ when you run 'ass' first time, it will generate 'ass.yml' config file under curr
 	mode: development ## 'development' or 'production' mode, you should provide pem file ({appid}_{mode}.pem) accordingly(such as, app1_development.pem, app1_production.pem). 
 	cron: cron  ## cron job file name, ASS server will generate a demo 'cron' file for demostration only under current directory.
 	timer: 0	# how often you run the cron job, unit: minute. when set with 0, means no cron job execute.
+	user: admin # admin username
+	pass: pass	# admin password
 	apps:
 	- app1 ## appid you want to supprt APNS, ASS Server can give push notification support for many iOS apps, just list the appid here.
 
@@ -88,29 +89,73 @@ FAQ:
 
 In AppDelegate file, add methods below to register device token
 
-	- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
-	{
-	    NSString * tokenAsString = [[[deviceToken description] 
-	                                 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] 
-	                                stringByReplacingOccurrencesOfString:@" " withString:@""];    
-	    NSString *urlAsString = [NSString stringWithFormat:@"http://serverIP:4567/v1/apps/app1/%@", token];
-	    NSURL *url = [NSURL URLWithString:urlAsString];
-	    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url]; 
-	    [urlRequest setTimeoutInterval:30.0f];
-	    [urlRequest setHTTPMethod:@"GET"];
-	    NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
-	    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:nil]; 
+	#pragma mark - push notification methods
+
+	- (void)sendToken:(NSString *)token {
+	    
+	    NSString *tokenUrl = [NSString stringWithFormat:@"http://serverIP:4567/v1/apps/app1/%@", token];
+	    NSLog(@"tokenUrl: %@", tokenUrl);
+	    //prepare NSURL with newly created string
+	    NSURL *url = [NSURL URLWithString:tokenUrl];
+	    
+	    //AsynchronousRequest to grab the data
+	    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+	    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+	    
+	    [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+	        if ([data length] > 0 && error == nil) {
+	            //            NSLog(@"send data successfully");
+	        } else if ([data length] == 0 && error == nil) {
+	            //            NSLog(@"No data");
+	        } else if (error != nil && error.code == NSURLErrorTimedOut) { //used this NSURLErrorTimedOut from
+	            //            NSLog(@"Token Time out");
+	        } else if (error != nil) {
+	            //            NSLog(@"Error is: [%@]", [error description]);
+	        }
+	    }];
 	}
 
-	- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+	    
+	    if ([((AppDelegate *) [[UIApplication sharedApplication] delegate]) checkNetwork1]) {
+	        NSString *tokenAsString = [[[deviceToken description]
+	                                    stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]]
+	                                   stringByReplacingOccurrencesOfString:@" " withString:@""];
+	        NSLog(@"My token is: [%@]", tokenAsString);
+	        [self sendToken:tokenAsString];
+	    }
+	    
+	}
+
+	- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+	    
+	    NSLog(@"Failed to get token, error: %@", error);
+	}
+
+	- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 	{
-		NSLog(@"Failed to get token, error: %@", error);
+	    NSString *message = nil;
+	    NSString *sound = nil;
+	    NSString *extra = nil;
+	    
+	    id aps = [userInfo objectForKey:@"aps"];
+	    extra = [userInfo objectForKey:@"extra"];
+	    if ([aps isKindOfClass:[NSString class]]) {
+	        message = aps;
+	    } else if ([aps isKindOfClass:[NSDictionary class]]) {
+	        message = [aps objectForKey:@"alert"];
+	        sound = [aps objectForKey:@"sound"];
+	        // badge
+	    }
+	    if (aps) {
+	        DLog(@"extra %@",[NSString stringWithFormat:@"sound %@ extra %@", sound, extra ]);
+	    }
 	}
 	
 2. How to send push notification? (Server Side)
 -------
 
-run **curl** command to send push notification message, whatever shell.
+run **curl** command to send push notification message on server' shell.
 
 	$ curl http://localhost:4567/v1/apps/app1/push/{message}/{pid}
 	
