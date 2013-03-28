@@ -165,7 +165,12 @@ param1 (message): push notification message you want to send, remember the messa
 
 param2 (pid ): unique string to mark the message, for example current timestamp or md5/sha1 digest
 
+3. How to send test push notification on web? 
+-------
 
+open your web browser and access http://localhost:4567/ (localhost should be changed to your server IP address accordingly), click "admin" on top navbar, you will see the Test Sending textbox on the top page, select your app , input your message and click 'send' button to send push notification.
+
+![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture5.png)
 
 Contributing to ass
 =======
