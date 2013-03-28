@@ -56,11 +56,13 @@ $> gem install ass
 Usage
 =======
 
-Prepare pem file:
+1.Prepare pem file:
+-------
 
 under the current directory, provide single pem file combined with certificate and key(name pattern: appid_mode.pem), HOWTO ([Check this link](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12))
 
-how to make development pem file
+2.how to make development pem file
+-------
 
 dev_cert.pem:
 
@@ -78,7 +80,8 @@ Development Pem:
 
 	cat dev_cert.pem dev_key.pem > appid_development.pem
 
-how to make produce production pem file	
+3.how to make produce production pem file	
+-------
 
 prod_cert.pem:
 
