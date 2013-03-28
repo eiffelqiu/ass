@@ -98,6 +98,8 @@ Production Pem:
 
 Start Ass server(default port is 4567)
 ------- 
+	
+	$ ass
 
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture1.png)
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture2.png)
