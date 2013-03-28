@@ -32,9 +32,26 @@ Mac:
     $ port install sqlite # Macport
 
 Installation
-=======
 
-	$ sudo gem install ass
+* Method 1: with OS X builtin Ruby(AKA 'system ruby'), need to run with 'sudo', no extra step
+
+```bash
+$> sudo gem install ass
+```
+
+* Method 2: Install Ruby 1.9 (via RVM or natively) first, no need to run with 'sudo'
+
+```bash
+$> gem install rvm
+$> rvm install 1.9.3
+$> rvm use 1.9.3
+```
+
+* Install ass:
+
+```bash
+$> gem install ass
+```
 	
 Usage
 =======
