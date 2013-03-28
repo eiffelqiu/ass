@@ -1,6 +1,6 @@
 ass
 =======
-####Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification with admin function.####
+####Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification with web admin interface ####
 
 Feature:
 =======
