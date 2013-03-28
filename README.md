@@ -56,12 +56,9 @@ $> gem install ass
 Usage
 =======
 
-1.Prepare pem file:
--------
-
 under the current directory, provide single pem file combined with certificate and key(name pattern: appid_mode.pem), HOWTO ([Check this link](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12))
 
-2.how to make development pem file
+How to make development pem file
 -------
 
 dev_cert.pem:
@@ -80,7 +77,7 @@ Development Pem:
 
 	cat dev_cert.pem dev_key.pem > appid_development.pem
 
-3.how to make produce production pem file	
+How to make produce production pem file	
 -------
 
 prod_cert.pem:
@@ -99,7 +96,8 @@ Production Pem:
 
 	$ cat prod_cert.pem prod_key.pem > appid_production.pem	
 
-* start ass server, default port is 4567 (sinatra's default port)
+Start Ass server(default port is 4567)
+------- 
 
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture1.png)
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture2.png)
