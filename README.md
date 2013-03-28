@@ -63,9 +63,11 @@ under the current directory, provide single pem file combined with certificate a
 how to make development pem file
 
 dev_cert.pem:
+
 	$ openssl x509 -in aps_development.cer -inform der -out dev_cert.pem
 
 dev_key.pem:
+
 	$ openssl pkcs12 -nocerts -in Certificates.p12 -out dev_key.pem
 	$ Enter Import Password: 
 	$ MAC verified OK
@@ -73,14 +75,17 @@ dev_key.pem:
 	$ Verifying - Enter PEM pass phrase: 
 
 Development Pem:
+
 	cat dev_cert.pem dev_key.pem > appid_development.pem
 
 how to make produce production pem file	
 
 prod_cert.pem:
+
 	$ openssl x509 -in aps_production.cer -inform der -out prod_cert.pem
 
 prod_key.pem:
+
 	$ openssl pkcs12 -nocerts -in Certificates.p12 -out prod_key.pem
 	$ Enter Import Password: 
 	$ MAC verified OK
@@ -88,8 +93,8 @@ prod_key.pem:
 	$ Verifying - Enter PEM pass phrase: 
 
 Production Pem:
-	$ cat prod_cert.pem prod_key.pem > appid_production.pem	
 
+	$ cat prod_cert.pem prod_key.pem > appid_production.pem	
 
 * start ass server, default port is 4567 (sinatra's default port)
 
