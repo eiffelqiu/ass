@@ -60,21 +60,35 @@ Prepare pem file:
 
 under the current directory, provide single pem file combined with certificate and key(name pattern: appid_mode.pem), HOWTO ([Check this link](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12))
 
-	cert.pem:
-		openssl x509 -in aps_development.cer -inform der -out cert.pem
+* how to make development pem file
 
-	key.pem:
-		$ openssl pkcs12 -nocerts -in key.p12 -out key.pem
+	dev_cert.pem:
+		openssl x509 -in aps_development.cer -inform der -out dev_cert.pem
+
+	dev_key.pem:
+		$ openssl pkcs12 -nocerts -in Certificates.p12 -out dev_key.pem
 		$ Enter Import Password: 
 		$ MAC verified OK
 		$ Enter PEM pass phrase: 
 		$ Verifying - Enter PEM pass phrase: 
 
-	Development Profile:
-		cat cert.pem key.pem > appid_development.pem
+	Development Pem:
+		cat dev_cert.pem dev_key.pem > appid_development.pem
 
-	Distribution Profile:
-		cat cert.pem key.pem > appid_production.pem
+* how to make produce production pem file	
+
+	prod_cert.pem:
+		openssl x509 -in aps_production.cer -inform der -out prod_cert.pem
+
+	prod_key.pem:
+		$ openssl pkcs12 -nocerts -in Certificates.p12 -out prod_key.pem
+		$ Enter Import Password: 
+		$ MAC verified OK
+		$ Enter PEM pass phrase: 
+		$ Verifying - Enter PEM pass phrase: 
+
+	Production Pem:
+		cat prod_cert.pem prod_key.pem > appid_production.pem	
 
 
 * start ass server, default port is 4567 (sinatra's default port)
@@ -89,7 +103,7 @@ Configuration (ass.yml)
 when you run 'ass' first time, it will generate 'ass.yml' config file under current directory. ([Check this link](https://raw.github.com/eiffelqiu/ass/master/ass.yml))
 	
 	port: 4567  ## ASS server port, default is sinatra's port number: 4567
-	mode: development ## 'development' or 'production' mode, you should provide pem file ({appid}_{mode}.pem) accordingly(such as, app1_development.pem, app1_production.pem). 
+	mode: development ## 'development' or 'production' mode, you should provide pem file ({appid}_{mode}.pem) accordingly(such as, app1_development.pem, app1_production.pem), see how to make these file above.
 	cron: cron  ## cron job file name, ASS server will generate a demo 'cron' file for demostration only under current directory.
 	timer: 0	# how often you run the cron job, unit: minute. when set with 0, means no cron job execute.
 	user: admin # admin username
