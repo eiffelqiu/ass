@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Ass by eiffelqiu</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Ass</h1>
+        <p>Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification with web admin interface</p>
+        <p class="view"><a href="https://github.com/eiffelqiu/ass">View the Project on GitHub <small>eiffelqiu/ass</small></a></p>
+        <ul>
+          <li><a href="https://github.com/eiffelqiu/ass/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/eiffelqiu/ass/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/eiffelqiu/ass">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>ass</h1>
+
+<h4>Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification with web admin interface</h4>
+
+<h1>Feature:</h1>
+
+<ol>
+<li> 'ass' is a rubygem, simple to install.</li>
+<li> only need to provide pem file.</li>
+<li> no need to setup database(using sqlite3).</li>
+<li> provide default config file(ass.yml) with default value.</li>
+</ol><h1>Sqlite3 Installation</h1>
+
+<p>CentOS/Redhat:</p>
+
+<pre><code>$ yum install sqlite3
+</code></pre>
+
+<p>Debian/Ubuntu:</p>
+
+<pre><code>$ apt-get install sqlite3
+</code></pre>
+
+<p>FreeBSD:</p>
+
+<pre><code>$ cd /usr/ports/databases/sqlite34
+$ sudo make install clean
+</code></pre>
+
+<p>Mac:</p>
+
+<pre><code>$ brew install sqlite # Homebrew
+$ port install sqlite # Macport
+</code></pre>
+
+<p>Installation</p>
+
+<ul>
+<li>Method 1: with OS X builtin Ruby(AKA 'system ruby'), need to run with 'sudo', no extra step</li>
+</ul><div class="highlight"><pre><span class="nv">$&gt;</span> sudo gem install ass
+</pre></div>
+
+<ul>
+<li>Method 2: Install Ruby 1.9 (via RVM or natively) first, no need to run with 'sudo'</li>
+</ul><div class="highlight"><pre><span class="nv">$&gt;</span> gem install rvm
+<span class="nv">$&gt;</span> rvm install 1.9.3
+<span class="nv">$&gt;</span> rvm use 1.9.3
+</pre></div>
+
+<ul>
+<li>Install ass:</li>
+</ul><div class="highlight"><pre><span class="nv">$&gt;</span> gem install ass
+</pre></div>
+
+<h1>Usage</h1>
+
+<p>under the current directory, provide single pem file combined with certificate and key(name pattern: appid_mode.pem), HOWTO (<a href="http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12">Check this link</a>)</p>
+
+<h2>How to make development pem file</h2>
+
+<p>dev_cert.pem:</p>
+
+<pre><code>$ openssl x509 -in aps_development.cer -inform der -out dev_cert.pem
+</code></pre>
+
+<p>dev_key.pem:</p>
+
+<pre><code>$ openssl pkcs12 -nocerts -in Certificates.p12 -out dev_key.pem
+$ Enter Import Password: 
+$ MAC verified OK
+$ Enter PEM pass phrase: 
+$ Verifying - Enter PEM pass phrase: 
+</code></pre>
+
+<p>Development Pem:</p>
+
+<pre><code>cat dev_cert.pem dev_key.pem &gt; appid_development.pem
+</code></pre>
+
+<h2>How to make produce production pem file </h2>
+
+<p>prod_cert.pem:</p>
+
+<pre><code>$ openssl x509 -in aps_production.cer -inform der -out prod_cert.pem
+</code></pre>
+
+<p>prod_key.pem:</p>
+
+<pre><code>$ openssl pkcs12 -nocerts -in Certificates.p12 -out prod_key.pem
+$ Enter Import Password: 
+$ MAC verified OK
+$ Enter PEM pass phrase: 
+$ Verifying - Enter PEM pass phrase: 
+</code></pre>
+
+<p>Production Pem:</p>
+
+<pre><code>$ cat prod_cert.pem prod_key.pem &gt; appid_production.pem 
+</code></pre>
+
+<h2>Start Ass server(default port is 4567)</h2>
+
+<pre><code>$ ass
+</code></pre>
+
+<p><img src="https://raw.github.com/eiffelqiu/ass/master/doc/capture1.png" alt="ass usage"><img src="https://raw.github.com/eiffelqiu/ass/master/doc/capture2.png" alt="ass usage"><img src="https://raw.github.com/eiffelqiu/ass/master/doc/capture3.png" alt="ass usage"><img src="https://raw.github.com/eiffelqiu/ass/master/doc/capture4.png" alt="ass usage"></p>
+
+<h1>Configuration (ass.yml)</h1>
+
+<p>when you run 'ass' first time, it will generate 'ass.yml' config file under current directory. (<a href="https://raw.github.com/eiffelqiu/ass/master/ass.yml">Check this link</a>)</p>
+
+<pre><code>port: 4567  ## ASS server port, default is sinatra's port number: 4567
+mode: development ## 'development' or 'production' mode, you should provide pem file ({appid}_{mode}.pem) accordingly(such as, app1_development.pem, app1_production.pem).
+cron: cron  ## cron job file name, ASS server will generate a demo 'cron' file for demostration only under current directory.
+timer: 0    # how often you run the cron job, unit: minute. when set with 0, means no cron job execute.
+user: admin # admin username
+pass: pass  # admin password
+apps:
+- app1 ## appid you want to supprt APNS, ASS Server can give push notification support for many iOS apps, just list the appid here.
+</code></pre>
+
+<h1>FAQ:</h1>
+
+<h2>1.  How to register notification? (Client Side)</h2>
+
+<p>In AppDelegate file, add methods below to register device token</p>
+
+<pre><code>#pragma mark - push notification methods
+
+- (void)sendToken:(NSString *)token {
+
+    NSString *tokenUrl = [NSString stringWithFormat:@"http://serverIP:4567/v1/apps/app1/%@", token];
+    NSLog(@"tokenUrl: %@", tokenUrl);
+    //prepare NSURL with newly created string
+    NSURL *url = [NSURL URLWithString:tokenUrl];
+
+    //AsynchronousRequest to grab the data
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+
+    [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if ([data length] &gt; 0 &amp;&amp; error == nil) {
+            //            NSLog(@"send data successfully");
+        } else if ([data length] == 0 &amp;&amp; error == nil) {
+            //            NSLog(@"No data");
+        } else if (error != nil &amp;&amp; error.code == NSURLErrorTimedOut) { //used this NSURLErrorTimedOut from
+            //            NSLog(@"Token Time out");
+        } else if (error != nil) {
+            //            NSLog(@"Error is: [%@]", [error description]);
+        }
+    }];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+
+    if ([((AppDelegate *) [[UIApplication sharedApplication] delegate]) checkNetwork1]) {
+        NSString *tokenAsString = [[[deviceToken description]
+                                    stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"&lt;&gt;"]]
+                                   stringByReplacingOccurrencesOfString:@" " withString:@""];
+        NSLog(@"My token is: [%@]", tokenAsString);
+        [self sendToken:tokenAsString];
+    }
+
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+
+    NSLog(@"Failed to get token, error: %@", error);
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    NSString *message = nil;
+    NSString *sound = nil;
+    NSString *extra = nil;
+
+    id aps = [userInfo objectForKey:@"aps"];
+    extra = [userInfo objectForKey:@"extra"];
+    if ([aps isKindOfClass:[NSString class]]) {
+        message = aps;
+    } else if ([aps isKindOfClass:[NSDictionary class]]) {
+        message = [aps objectForKey:@"alert"];
+        sound = [aps objectForKey:@"sound"];
+        // badge
+    }
+    if (aps) {
+        DLog(@"extra %@",[NSString stringWithFormat:@"sound %@ extra %@", sound, extra ]);
+    }
+}
+</code></pre>
+
+<h2>2. How to send push notification? (Server Side)</h2>
+
+<p>run <strong>curl</strong> command to send push notification message on server' shell.</p>
+
+<pre><code>$ curl http://localhost:4567/v1/apps/app1/push/{message}/{pid}
+</code></pre>
+
+<p>Note:</p>
+
+<p>param1 (message): push notification message you want to send, remember the message should be html escaped</p>
+
+<p>param2 (pid ): unique string to mark the message, for example current timestamp or md5/sha1 digest</p>
+
+<h2>3. How to send test push notification on web? </h2>
+
+<p>open your web browser and access http://localhost:4567/ (localhost should be changed to your server IP address accordingly), click "admin" on top navbar, you will see the Test Sending textbox on the top page, select your app , input your message and click 'send' button to send push notification.</p>
+
+<p><img src="https://raw.github.com/eiffelqiu/ass/master/doc/capture5.png" alt="ass usage"></p>
+
+<h1>Contributing to ass</h1>
+
+<ul>
+<li>Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.</li>
+<li>Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.</li>
+<li>Fork the project.</li>
+<li>Start a feature/bugfix branch.</li>
+<li>Commit and push until you are happy with your contribution.</li>
+<li>Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.</li>
+<li>Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.</li>
+</ul><h1>Copyright</h1>
+
+<h5>Copyright (c) 2013 Eiffel Qiu. See LICENSE.txt for further details.</h5>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/eiffelqiu">eiffelqiu</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
