@@ -1,6 +1,6 @@
 ass
 =======
-####Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification and in app purchase service.####
+####Apple Service Server was written with Ruby/Sinatra and Sequel(Sqlite3), it provides push notification with admin function.####
 
 Feature:
 =======
@@ -64,6 +64,8 @@ under the current directory, provide single pem file combined with certificate a
 
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture1.png)
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture2.png)
+![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture3.png)
+![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture4.png)
 
 Configuration (ass.yml)
 =======
