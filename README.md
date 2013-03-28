@@ -75,7 +75,7 @@ dev_key.pem:
 
 Development Pem:
 
-	cat dev_cert.pem dev_key.pem > appid_development.pem
+	$ cat dev_cert.pem dev_key.pem > appid_development.pem
 
 How to make produce production pem file	
 -------
@@ -225,5 +225,5 @@ Contributing to ass
 Copyright
 =======
 
-#####Copyright (c) 2012 Eiffel Qiu. See LICENSE.txt for further details.#####
+#####Copyright (c) 2013 Eiffel Qiu. See LICENSE.txt for further details.#####
 
