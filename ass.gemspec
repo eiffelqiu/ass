@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "ass"
-  s.version = "0.0.17"
+  s.version = "0.0.18"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eiffel Qiu"]
-  s.date = "2013-03-27"
+  s.date = "2013-04-02"
   s.description = "Apple Service Server written with Sinatra and Sequel(Sqlite3)"
   s.email = "eiffelqiu@gmail.com"
   s.executables = ["ass"]

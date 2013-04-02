@@ -283,8 +283,8 @@ class App < Sinatra::Base
 
       puts "'#{message}' was sent to (#{app}) with pid: [#{pid}], badge:#{badge} , sound: #{sound}, extra:#{extra}" if "#{$mode}".strip == 'development'
 
-      @push = Token.where(:app => app)
-      @exist = Push.first(:pid => pid)
+      @tokens = Token.where(:app => "#{app}")
+      @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
 
       unless @exist
         openSSLContext = $certkey["#{app}"]
@@ -301,7 +301,7 @@ class App < Sinatra::Base
         #Push.create( :pid => pid )
         Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )
         # write our packet to the stream
-        @push.each do |o|
+        @tokens.each do |o|
           tokenText = o[:token]
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
@@ -328,8 +328,8 @@ class App < Sinatra::Base
 
       puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development'
 
-      @push = Token.where(:app => app)
-      @exist = Push.first(:pid => pid)
+      @tokens = Token.where(:app => "#{app}")
+      @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
 
       unless @exist
         openSSLContext = $certkey["#{app}"]
@@ -344,9 +344,9 @@ class App < Sinatra::Base
         sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
         sslSocket.connect
         #Push.create( :pid => pid )
-        Push.insert(:pid => pid)
+        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )        
         # write our packet to the stream
-        @push.each do |o|
+        @tokens.each do |o|
           tokenText = o[:token]
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
