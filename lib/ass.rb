@@ -229,7 +229,7 @@ class App < Sinatra::Base
     #   puts "#{err.class} ##{err}"  
     # end   
     system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{message}/#{pid}"  
-    redirect '/' if (params[:app] and  params[:message])
+    redirect '/v1/admin/push' if (params[:app] and  params[:message])
   end  
 
   get "/v1/admin/:db" do
@@ -243,13 +243,14 @@ class App < Sinatra::Base
         @o << Token.where(:app => app).order(:id).reverse.paginate(page, 20)
       }
       erb :token
-    end
-    if (db == 'push') then 
+    elsif (db == 'push') then 
       @p = []
       $apps.each_with_index { |app, index|
         @p << Push.where(:app => app).order(:id).reverse.paginate(page, 20)
       }
       erb :push
+    else
+      erb :not_found
     end
   end  
 
