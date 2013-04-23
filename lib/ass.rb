@@ -111,8 +111,8 @@ end
 ## Sequel Database Setup
 ############################################################
 
-unless File.exist?("#{Dir.pwd}/ass.db") then
-  $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass.db")
+unless File.exist?("#{Dir.pwd}/ass-#{$model}.db") then
+  $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass-#{$model}.db")
 
   $DB.create_table :tokens do
     primary_key :id
@@ -131,7 +131,7 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
     index [:pid, :app, :message]
   end
 else
-  $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass.db")
+  $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass-#{$model}.db")
 end
 
 WillPaginate.per_page = 10
