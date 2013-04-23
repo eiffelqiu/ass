@@ -125,10 +125,10 @@ unless File.exist?("#{Dir.pwd}/ass.db") then
   $DB.create_table :pushes do
     primary_key :id
     String :pid, :unique => true, :null => false, :size => 100
-    String :app, :unique => true, :null => false, :size => 30
+    String :app, :unique => false, :null => false, :size => 30
     String :message, :unique => false, :null => false, :size => 107
     Time :created_at
-    index [:pid, :message]
+    index [:pid, :app, :message]
   end
 else
   $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass.db")
