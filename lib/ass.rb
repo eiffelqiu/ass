@@ -258,13 +258,15 @@ class App < Sinatra::Base
 
     ## register token api
     get "/v1/apps/#{app}/:token" do
-      puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development'
-      o = Token.first(:app => app, :token => params[:token])
-      unless o
-        Token.insert(
-            :app => app,
-            :token => params[:token]
-        )
+      if "#{params[:token]}".length == 64 then
+        puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development'
+        o = Token.first(:app => app, :token => params[:token])
+        unless o
+          Token.insert(
+              :app => app,
+              :token => params[:token]
+          )
+        end
       end
     end
 
