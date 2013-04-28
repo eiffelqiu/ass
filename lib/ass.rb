@@ -9,6 +9,7 @@ require 'cgi'
 require 'rufus/scheduler'
 require 'eventmachine'
 require 'sinatra/base'
+require 'rack/mobile-detect'
 require 'yaml'
 require 'uri-handler'
 require 'net/http'
@@ -168,23 +169,37 @@ end
 ############################################################
 
 class App < Sinatra::Base
+  use Rack::MobileDetect
 
   set :root, File.expand_path('../../', __FILE__)
   set :port, "#{$port}".to_i
   set :public_folder, File.dirname(__FILE__) + '/../public'
   set :views, File.dirname(__FILE__) + '/../views'
 
-  def authorized?
-    @auth ||= Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ["#{$user}", "#{$pass}"]
-  end
-
-  def protected!
-    unless authorized?
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-      throw(:halt, [401, "Oops... we need your login name & password\n"])
+  helpers do
+    
+    def iOS? 
+      ret = case request.env['X_MOBILE_DEVICE']
+            when /iPhone|iPod|iPad/ then
+              true
+            else false
+            end
+      return ret     
     end
-  end
+
+    def authorized?
+      @auth ||= Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ["#{$user}", "#{$pass}"]
+    end
+
+    def protected!
+      unless authorized?
+        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        throw(:halt, [401, "Oops... we need your login name & password\n"])
+      end
+    end
+
+  end  
 
   configure :production, :development do
     if "#{$log}".strip == 'on' then
@@ -258,7 +273,7 @@ class App < Sinatra::Base
 
     ## register token api
     get "/v1/apps/#{app}/:token" do
-      if "#{params[:token]}".length == 64 then
+      if (("#{params[:token]}".length == 64) and iOS? ) then
         puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development'
         o = Token.first(:app => app, :token => params[:token])
         unless o
