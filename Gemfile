@@ -1,10 +1,6 @@
-#source "http://rubygems.org"
 source "http://rubygems.org"
-source "http://ruby.taobao.org"
-source "http://gems.github.com"
-# Add dependencies required to use your gem here.
-# Example:
-#   gem "activesupport", ">= 2.3.5"
+#source "http://ruby.taobao.org"
+#source "http://gems.github.com"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
@@ -18,7 +14,7 @@ end
 gem 'sqlite3'
 gem 'thin'
 gem 'json'
-gem 'sinatra'
+gem 'sinatra', '~> 1.3.0'
 gem 'sequel'
 gem 'rufus-scheduler'
 gem 'eventmachine'
