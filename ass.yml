@@ -3,7 +3,8 @@ mode: development
 log: off
 cron: cron
 timer: 0
-user: admin
+user: admim
 pass: pass
+flood: 1
 apps:
 - app1

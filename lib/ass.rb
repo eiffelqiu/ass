@@ -47,13 +47,17 @@ env = ENV['SINATRA_ENV'] || "development"
 config = YAML.load_file("#{Dir.pwd}/ass.yml")
 $timer = "#{config['timer']}".to_i
 $cron = config['cron'] || 'cron'
-$port = config['port'] || 4567
+$port = "#{config['port']}".to_i || 4567
 $mode = config['mode'] || env
 $VERSION = File.open("#{ROOTDIR}/VERSION", "rb").read
 $apps = config['apps'] || []
 $log = config['log'] || 'off'
 $user = config['user'] || 'admin'
 $pass = config['pass'] || 'pass'
+$flood = "#{config['flood']}".to_i || 1  # default 1 minute
+
+$client_ip = '127.0.0.1'
+$last_access = 0
 
 ############################################################
 ## Certificate Key Setup
@@ -114,7 +118,6 @@ end
 
 unless File.exist?("#{Dir.pwd}/ass-#{$model}.db") then
   $DB = Sequel.connect("sqlite://#{Dir.pwd}/ass-#{$model}.db")
-
   $DB.create_table :tokens do
     primary_key :id
     String :app, :unique => false, :null => false
@@ -122,7 +125,6 @@ unless File.exist?("#{Dir.pwd}/ass-#{$model}.db") then
     Time :created_at
     index [:app, :token]
   end
-
   $DB.create_table :pushes do
     primary_key :id
     String :pid, :unique => true, :null => false, :size => 100
@@ -137,19 +139,12 @@ end
 
 WillPaginate.per_page = 10
 
-# Token = $DB[:tokens]
-# Push = $DB[:pushes]
-
 class Token < Sequel::Model
   Sequel.extension :pagination
-
-  # here is your code
 end
 
 class Push < Sequel::Model
   Sequel.extension :pagination
-
-  # here is your code
 end
 
 ############################################################
@@ -177,14 +172,33 @@ class App < Sinatra::Base
   set :views, File.dirname(__FILE__) + '/../views'
 
   helpers do
-    
+
+    def checkFlood?(req)
+      if $client_ip != "#{req.ip}" then
+        $client_ip = "#{req.ip}"
+        return false
+      else
+        if $last_access == 0 then
+          return false
+        else
+          return isFlood?
+        end
+      end      
+    end
+
+    def isFlood?
+        result = (Time.now - $last_access) < $flood * 60
+        $last_access = Time.now
+        return result
+    end
+
     def iOS? 
-      ret = case request.env['X_MOBILE_DEVICE']
+      result = case request.env['X_MOBILE_DEVICE']
             when /iPhone|iPod|iPad/ then
               true
             else false
             end
-      return ret     
+      return result     
     end
 
     def authorized?
@@ -198,7 +212,6 @@ class App < Sinatra::Base
         throw(:halt, [401, "Oops... we need your login name & password\n"])
       end
     end
-
   end  
 
   configure :production, :development do
@@ -273,7 +286,7 @@ class App < Sinatra::Base
 
     ## register token api
     get "/v1/apps/#{app}/:token" do
-      if (("#{params[:token]}".length == 64) and iOS? ) then
+      if (("#{params[:token]}".length == 64) and iOS? and checkFlood?(request) ) then
         puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development'
         o = Token.first(:app => app, :token => params[:token])
         unless o
