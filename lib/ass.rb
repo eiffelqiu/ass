@@ -20,6 +20,7 @@ require 'will_paginate'
 require 'will_paginate/sequel'  # or data_mapper/sequel
 require 'uri' 
 require 'sinatra/reloader' if development?
+require 'sinatra/synchrony'
 
 ############################################################
 ## Initilization Setup
@@ -164,6 +165,9 @@ end
 ############################################################
 
 class App < Sinatra::Base
+  
+  register Sinatra::Synchrony
+
   use Rack::MobileDetect
 
   set :root, File.expand_path('../../', __FILE__)
