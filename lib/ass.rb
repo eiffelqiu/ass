@@ -346,7 +346,7 @@ class App < Sinatra::Base
           po = {:aps => {:alert => "#{message}", :badge => badge, :sound => "#{sound}"}, :extra => "#{extra}"}
           payload = ActiveSupport::JSON.encode(po)
           # construct the packet
-          packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
+          packet = [0, 0, 32, tokenData, 0, payload.bytesize, payload].pack("ccca*cca*")
           # read our certificate and set up our SSL context
           sslSocket.write(packet)
         end
@@ -393,7 +393,7 @@ class App < Sinatra::Base
           po = {:aps => {:alert => "#{message}", :badge => 1}}
           payload = ActiveSupport::JSON.encode(po)
           # construct the packet
-          packet = [0, 0, 32, tokenData, 0, payload.length, payload].pack("ccca*cca*")
+          packet = [0, 0, 32, tokenData, 0, payload.bytesize, payload].pack("ccca*cca*")
           # read our certificate and set up our SSL context
           sslSocket.write(packet)
         end

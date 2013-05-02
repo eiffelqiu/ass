@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "ass"
-  s.version = "0.0.20"
+  s.version = "0.0.21"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Eiffel Qiu"]
-  s.date = "2013-04-28"
+  s.date = "2013-05-02"
   s.description = "Apple Service Server written with Sinatra and Sequel(Sqlite3)"
   s.email = "eiffelqiu@gmail.com"
   s.executables = ["ass"]
@@ -64,6 +64,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<will_paginate>, ["~> 3.0"])
       s.add_runtime_dependency(%q<sinatra-contrib>, [">= 0"])
       s.add_runtime_dependency(%q<rack-mobile-detect>, [">= 0"])
+      s.add_runtime_dependency(%q<sinatra-synchrony>, ["~> 0.4.1"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
@@ -91,6 +92,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<will_paginate>, ["~> 3.0"])
       s.add_dependency(%q<sinatra-contrib>, [">= 0"])
       s.add_dependency(%q<rack-mobile-detect>, [">= 0"])
+      s.add_dependency(%q<sinatra-synchrony>, ["~> 0.4.1"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_dependency(%q<bundler>, [">= 0"])
@@ -119,6 +121,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<will_paginate>, ["~> 3.0"])
     s.add_dependency(%q<sinatra-contrib>, [">= 0"])
     s.add_dependency(%q<rack-mobile-detect>, [">= 0"])
+    s.add_dependency(%q<sinatra-synchrony>, ["~> 0.4.1"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
     s.add_dependency(%q<bundler>, [">= 0"])
