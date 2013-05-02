@@ -128,7 +128,7 @@ unless File.exist?("#{Dir.pwd}/ass-#{$mode}.db") then
   end
   $DB.create_table :pushes do
     primary_key :id
-    String :pid, :unique => true, :null => false, :size => 100
+    String :pid, :unique => false, :null => false, :size => 100
     String :app, :unique => false, :null => false, :size => 30
     String :message, :unique => false, :null => false, :size => 107
     Time :created_at
@@ -296,7 +296,8 @@ class App < Sinatra::Base
         unless o
           Token.insert(
               :app => app,
-              :token => params[:token]
+              :token => params[:token],
+              :created_at => Time.now
           )
         end
       end
@@ -321,6 +322,9 @@ class App < Sinatra::Base
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
 
       unless @exist
+        
+        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )
+
         openSSLContext = $certkey["#{app}"]
         # Connect to port 2195 on the server.
         sock = nil
@@ -332,8 +336,7 @@ class App < Sinatra::Base
         # do our SSL handshaking
         sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
         sslSocket.connect
-        #Push.create( :pid => pid )
-        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )
+
         # write our packet to the stream
         @tokens.each do |o|
           tokenText = o[:token]
@@ -366,6 +369,9 @@ class App < Sinatra::Base
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
 
       unless @exist
+
+        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )   
+
         openSSLContext = $certkey["#{app}"]
         # Connect to port 2195 on the server.
         sock = nil
@@ -377,8 +383,7 @@ class App < Sinatra::Base
         # do our SSL handshaking
         sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
         sslSocket.connect
-        #Push.create( :pid => pid )
-        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )        
+     
         # write our packet to the stream
         @tokens.each do |o|
           tokenText = o[:token]
