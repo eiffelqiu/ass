@@ -308,7 +308,6 @@ class App < Sinatra::Base
       protected! unless request.host == 'localhost'
       message = CGI::unescape(params[:alert].encode("UTF-8") || "")[0..107]
       badge = 1
-      puts "params[:badge] = [#{params[:badge]}]"
       badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
       sound = CGI::unescape(params[:sound] || "")
       extra = CGI::unescape(params[:extra] || "")
@@ -356,12 +355,13 @@ class App < Sinatra::Base
       end
     end
 
-    ## http GET method push api
+    ## http GET method push api 
+    ## POST method get more options
     get "/v1/apps/#{app}/push/:message/:pid" do
       protected! unless request.host == 'localhost'
       message = CGI::unescape(params[:message])
-      pid = params[:pid]
 
+      pid = params[:pid]
       puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development'
 
       @tokens = Token.where(:app => "#{app}")
