@@ -251,7 +251,7 @@ class App < Sinatra::Base
 
   post '/v1/send' do
     app = params[:app]
-    message = CGI::escape(params[:message] || "")   
+    message = CGI::escape(params[:message] || "").encode("UTF-8")   
     pid = "#{Time.now.to_i}"   
     # begin  
     #   url = URI.parse("http://localhost:#{$port}/v1/apps/#{app}/push")
@@ -306,7 +306,7 @@ class App < Sinatra::Base
     ## http POST method push api
     post "/v1/apps/#{app}/push" do
       protected! unless request.host == 'localhost'
-      message = CGI::unescape(params[:alert] || "")[0..107]
+      message = CGI::unescape(params[:alert].encode("UTF-8") || "")[0..107]
       badge = 1
       puts "params[:badge] = [#{params[:badge]}]"
       badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
@@ -360,7 +360,6 @@ class App < Sinatra::Base
     get "/v1/apps/#{app}/push/:message/:pid" do
       protected! unless request.host == 'localhost'
       message = CGI::unescape(params[:message])
-      puts message if "#{$mode}".strip == 'development'
       pid = params[:pid]
 
       puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development'
