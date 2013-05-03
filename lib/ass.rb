@@ -360,12 +360,11 @@ class App < Sinatra::Base
     ## POST method get more options
     get "/v1/apps/#{app}/push/:message/:pid" do
       protected! unless request.host == 'localhost'
-      message = CGI::unescape(params[:message])
-
-      pid = params[:pid]
+      message = CGI::unescape(params[:message].encode("UTF-8") || '' )[0..107]
+      pid = "#{params[:pid]}"
       puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development'
 
-      @tokens = Token.where(:app => "#{app}")
+      @tokens = Token.where(:app => "#{app}").reverse_order(:id)
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
 
       unless @exist
@@ -386,15 +385,15 @@ class App < Sinatra::Base
      
         # write our packet to the stream
         @tokens.each do |o|
-          tokenText = o[:token]
+          tokenText = "#{o[:token]}"
           # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
           # construct the payload
-          po = {:aps => {:alert => "#{message}", :badge => 1}}
-          payload = ActiveSupport::JSON.encode(po)
-          # construct the packet
-          packet = [0, 0, 32, tokenData, 0, payload.bytesize, payload].pack("ccca*cca*")
-          # read our certificate and set up our SSL context
+          aps = {'aps'=> {} }
+          aps['aps']['alert'] = message
+          aps['aps']['badge'] = 1
+          pm = aps.to_json
+          packet = [0,0,32,devData,0,pm.bytesize,pm].pack("ccca*cca*")
           sslSocket.write(packet)
         end
         # cleanup
