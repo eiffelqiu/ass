@@ -116,6 +116,9 @@ when you run 'ass' first time, it will generate 'ass.yml' config file under curr
 	timer: 0	# how often you run the cron job, unit: minute. when set with 0, means no cron job execute.
 	user: admin # admin username
 	pass: pass	# admin password
+	flood: 1 	# request time from same ip every one minute as Flood Attack
+	pempass: pempass # pem password
+	loglevel: info	 # logger level
 	apps:
 	- app1 ## appid you want to supprt APNS, ASS Server can give push notification support for many iOS apps, just list the appid here.
 

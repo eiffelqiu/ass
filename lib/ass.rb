@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'sinatra'
+require 'logger'
 require 'sequel'
 require 'socket'
 require 'openssl'
@@ -17,9 +18,8 @@ require 'active_support'
 require 'json'
 require 'digest/sha2'
 require 'will_paginate'
-require 'will_paginate/sequel'  # or data_mapper/sequel
+require 'will_paginate/sequel'
 require 'uri' 
-require 'sinatra/reloader' if development?
 require 'sinatra/synchrony'
 
 ############################################################
@@ -55,7 +55,8 @@ $apps = config['apps'] || []
 $log = config['log'] || 'off'
 $user = config['user'] || 'admin'
 $pass = config['pass'] || 'pass'
-$pemp = config['pemp'] || 'pempass'
+$pempass = config['pempass'] || ''
+$loglevel = config['loglevel'] || 'info'
 $flood = "#{config['flood']}".to_i || 1  # default 1 minute
 
 $client_ip = '127.0.0.1'
@@ -77,7 +78,11 @@ def check_cert
       certfile = File.read("#{Dir.pwd}/#{app}_#{$mode}.pem")
       openSSLContext = OpenSSL::SSL::SSLContext.new
       openSSLContext.cert = OpenSSL::X509::Certificate.new(certfile)
-      openSSLContext.key = OpenSSL::PKey::RSA.new(certfile,$pemp)
+      if $pempass == '' then
+        openSSLContext.key = OpenSSL::PKey::RSA.new(certfile) 
+      else
+        openSSLContext.key = OpenSSL::PKey::RSA.new(certfile,"#{$pempass}")
+      end
       $certkey["#{app}"] = openSSLContext
     end
   }
@@ -170,13 +175,47 @@ class App < Sinatra::Base
   register Sinatra::Synchrony
 
   use Rack::MobileDetect
+  
+  LOGGER = Logger.new("ass-#{$mode}.log", 'a+')
+
+  case $loglevel.upcase
+  when 'FATAL'
+    set :logging, Logger::FATAL
+  when 'ERROR'
+    set :logging, Logger::ERROR
+  when 'WARN'
+    set :logging, Logger::WARN
+  when 'INFO'
+    set :logging, Logger::INFO   
+  when 'DEBUG'
+    set :logging, Logger::DEBUG        
+  else
+    set :logging, Logger::DEBUG
+  end  
+
+  if "#{$mode}".strip == 'production' then
+    set :environment, :production 
+  else
+    set :environment, :development    
+  end
 
   set :root, File.expand_path('../../', __FILE__)
   set :port, "#{$port}".to_i
   set :public_folder, File.dirname(__FILE__) + '/../public'
   set :views, File.dirname(__FILE__) + '/../views'
 
+  configure :production, :development do
+    enable :logging
+  end  
+
   helpers do
+
+    include Rack::Utils
+    alias_method :h, :escape_html    
+
+    def logger
+      LOGGER
+    end
 
     def checkFlood?(req)
       if $client_ip != "#{req.ip}" then
@@ -219,18 +258,12 @@ class App < Sinatra::Base
     end
   end  
 
-  configure :production, :development do
-    if "#{$log}".strip == 'on' then
-      enable :logging
+  before do
+    if "#{$mode}".strip == 'development' then
+      enable :dump_errors, :raise_errors, :show_exceptions
+    else
+      disable :dump_errors, :raise_errors, :show_exceptions
     end
-  end
-
-  if "#{$mode}".strip == 'development' then
-    set :show_exceptions, true
-    set :dump_errors, true
-  else
-    set :show_exceptions, false
-    set :dump_errors, false
   end
 
   get '/' do
@@ -247,7 +280,7 @@ class App < Sinatra::Base
 
   error do
     @error = "";
-    @error = params['captures'].first.inspect if "#{$mode}".strip == 'development'
+    @error = params['captures'].first.inspect if development?
   end  
 
   post '/v1/send' do
@@ -260,7 +293,7 @@ class App < Sinatra::Base
     #   Net::HTTP.post_form(url, post_args1) 
     # rescue =>err  
     #   puts "#{err.class} ##{err}"  
-    # end   
+    # end  
     system "curl http://localhost:#{$port}/v1/apps/#{app}/push/#{message}/#{pid}"  
     redirect '/v1/admin/push' if (params[:app] and  params[:message])
   end  
@@ -292,7 +325,6 @@ class App < Sinatra::Base
     ## register token api
     get "/v1/apps/#{app}/:token" do
       if (("#{params[:token]}".length == 64) and iOS? and checkFlood?(request) ) then
-        puts "[#{params[:token]}] was added to '#{app}'" if "#{$mode}".strip == 'development'
         o = Token.first(:app => app, :token => params[:token])
         unless o
           Token.insert(
@@ -312,11 +344,7 @@ class App < Sinatra::Base
       badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
       sound = CGI::unescape(params[:sound] || "")
       extra = CGI::unescape(params[:extra] || "")
-
-      puts "#{badge} : #{message} extra: #{extra}" if "#{$mode}".strip == 'development'
       pid = params[:pid]
-
-      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}], badge:#{badge} , sound: #{sound}, extra:#{extra}" if "#{$mode}".strip == 'development'
 
       @tokens = Token.where(:app => "#{app}")
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
@@ -360,9 +388,8 @@ class App < Sinatra::Base
     ## POST method get more options
     get "/v1/apps/#{app}/push/:message/:pid" do
       protected! unless request.host == 'localhost'
-      message = CGI::unescape(params[:message].encode("UTF-8") || '' )[0..107]
+      message = CGI::unescape(params[:message].encode("UTF-8") || '')[0..107]
       pid = "#{params[:pid]}"
-      puts "'#{message}' was sent to (#{app}) with pid: [#{pid}]" if "#{$mode}".strip == 'development'
 
       @tokens = Token.where(:app => "#{app}").reverse_order(:id)
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")

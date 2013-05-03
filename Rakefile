@@ -34,6 +34,8 @@ Jeweler::Tasks.new do |gem|
   gem.add_dependency 'uri-handler' 
   gem.add_dependency 'will_paginate', '~> 3.0'
   gem.add_dependency 'sinatra-contrib'
+  gem.add_dependency 'rack-mobile-detect'
+  gem.add_dependency 'sinatra-synchrony'  
 
   gem.rubyforge_project = 'ass'
 end
