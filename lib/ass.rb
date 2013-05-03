@@ -368,35 +368,29 @@ class App < Sinatra::Base
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
 
       unless @exist
-
-        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )   
+        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" ) 
 
         openSSLContext = $certkey["#{app}"]
-        # Connect to port 2195 on the server.
         sock = nil
         if $mode == 'production' then
           sock = TCPSocket.new('gateway.push.apple.com', 2195)
         else
           sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
         end
-        # do our SSL handshaking
         sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
         sslSocket.connect
-     
-        # write our packet to the stream
+
         @tokens.each do |o|
           tokenText = "#{o[:token]}"
-          # pack the token to convert the ascii representation back to binary
           tokenData = [tokenText].pack('H*')
-          # construct the payload
-          aps = {'aps'=> {} }
+          aps = {'aps'=> {}}
           aps['aps']['alert'] = message
           aps['aps']['badge'] = 1
           pm = aps.to_json
           packet = [0,0,32,devData,0,pm.bytesize,pm].pack("ccca*cca*")
           sslSocket.write(packet)
         end
-        # cleanup
+        
         sslSocket.close
         sock.close
       end
