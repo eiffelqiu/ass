@@ -6,5 +6,6 @@ timer: 0
 user: admin
 pass: pass
 flood: 1
+pemp: pempass
 apps:
 - app1

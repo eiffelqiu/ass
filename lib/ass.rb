@@ -55,6 +55,7 @@ $apps = config['apps'] || []
 $log = config['log'] || 'off'
 $user = config['user'] || 'admin'
 $pass = config['pass'] || 'pass'
+$pemp = config['pemp'] || 'pempass'
 $flood = "#{config['flood']}".to_i || 1  # default 1 minute
 
 $client_ip = '127.0.0.1'
@@ -76,7 +77,7 @@ def check_cert
       certfile = File.read("#{Dir.pwd}/#{app}_#{$mode}.pem")
       openSSLContext = OpenSSL::SSL::SSLContext.new
       openSSLContext.cert = OpenSSL::X509::Certificate.new(certfile)
-      openSSLContext.key = OpenSSL::PKey::RSA.new(certfile)
+      openSSLContext.key = OpenSSL::PKey::RSA.new(certfile,$pemp)
       $certkey["#{app}"] = openSSLContext
     end
   }
