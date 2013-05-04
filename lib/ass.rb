@@ -1,26 +1,30 @@
 #encoding: utf-8
 
 require 'rubygems'
-require 'sinatra'
+require 'yaml'
 require 'logger'
 require 'sequel'
 require 'socket'
 require 'openssl'
 require 'cgi'
+
 require 'rufus/scheduler'
 require 'eventmachine'
+require 'sinatra'
 require 'sinatra/base'
+require 'sinatra/synchrony'
 require 'rack/mobile-detect'
-require 'yaml'
+
+require 'uri' 
 require 'uri-handler'
 require 'net/http'
+
 require 'active_support'
 require 'json'
 require 'digest/sha2'
+
 require 'will_paginate'
 require 'will_paginate/sequel'
-require 'uri' 
-require 'sinatra/synchrony'
 
 ############################################################
 ## Initilization Setup
@@ -175,6 +179,8 @@ class App < Sinatra::Base
   register Sinatra::Synchrony
 
   use Rack::MobileDetect
+
+  enable :logging
   
   LOGGER = Logger.new("ass-#{$mode}.log", 'a+')
 
@@ -203,10 +209,6 @@ class App < Sinatra::Base
   set :port, "#{$port}".to_i
   set :public_folder, File.dirname(__FILE__) + '/../public'
   set :views, File.dirname(__FILE__) + '/../views'
-
-  configure :production, :development do
-    enable :logging
-  end  
 
   helpers do
 
@@ -256,6 +258,55 @@ class App < Sinatra::Base
         throw(:halt, [401, "Oops... we need your login name & password\n"])
       end
     end
+
+    def push(parameter)
+      message = CGI::unescape(parameter[:alert].encode("UTF-8") || "")[0..107]
+      pid = "#{parameter[:pid]}"
+      badge = 1
+      badge = parameter[:badge].to_i if parameter[:badge] and parameter[:badge] != ''
+      sound = CGI::unescape(parameter[:sound] || "")
+      extra = CGI::unescape(parameter[:extra] || "")         
+
+      @tokens = Token.where(:app => "#{app}").reverse_order(:id)
+      @exist = Push.first(:pid => "#{pid}", :app => "#{app}")      
+
+      unless @exist
+
+        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" ) 
+
+        openSSLContext = $certkey["#{app}"]
+        sock = nil
+        if $mode == 'production' then
+          sock = TCPSocket.new('gateway.push.apple.com', 2195)
+        else
+          sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
+        end
+        sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
+        sslSocket.connect        
+
+        # write our packet to the stream
+        @tokens.each do |o|
+          tokenText = "#{o[:token]}"
+          tokenData = [tokenText].pack('H*')
+          aps = {'aps'=> {}}
+          aps['aps']['alert'] = message
+          aps['aps']['badge'] = badge
+          aps['aps']['sound'] = sound
+          aps['aps']['extra'] = extra
+          pm = aps.to_json
+          packet = [0,0,32,devData,0,pm.bytesize,pm].pack("ccca*cca*")
+          sslSocket.write(packet)      
+        end
+        # cleanup
+        sslSocket.close
+        sock.close
+      end      
+    end
+
+    def localonly(req)
+      protected! unless req.host == 'localhost'
+    end
+
   end  
 
   before do
@@ -338,89 +389,15 @@ class App < Sinatra::Base
 
     ## http POST method push api
     post "/v1/apps/#{app}/push" do
-      protected! unless request.host == 'localhost'
-      message = CGI::unescape(params[:alert].encode("UTF-8") || "")[0..107]
-      badge = 1
-      badge = params[:badge].to_i if params[:badge] and params[:badge] != ''
-      sound = CGI::unescape(params[:sound] || "")
-      extra = CGI::unescape(params[:extra] || "")
-      pid = params[:pid]
-
-      @tokens = Token.where(:app => "#{app}")
-      @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
-
-      unless @exist
-        
-        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" )
-
-        openSSLContext = $certkey["#{app}"]
-        # Connect to port 2195 on the server.
-        sock = nil
-        if $mode == 'production' then
-          sock = TCPSocket.new('gateway.push.apple.com', 2195)
-        else
-          sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
-        end
-        # do our SSL handshaking
-        sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
-        sslSocket.connect
-
-        # write our packet to the stream
-        @tokens.each do |o|
-          tokenText = o[:token]
-          # pack the token to convert the ascii representation back to binary
-          tokenData = [tokenText].pack('H*')
-          # construct the payload
-          po = {:aps => {:alert => "#{message}", :badge => badge, :sound => "#{sound}"}, :extra => "#{extra}"}
-          payload = ActiveSupport::JSON.encode(po)
-          # construct the packet
-          packet = [0, 0, 32, tokenData, 0, payload.bytesize, payload].pack("ccca*cca*")
-          # read our certificate and set up our SSL context
-          sslSocket.write(packet)
-        end
-        # cleanup
-        sslSocket.close
-        sock.close
-      end
+      localonly(request)
+      push(params)
     end
 
     ## http GET method push api 
     ## POST method get more options
     get "/v1/apps/#{app}/push/:message/:pid" do
-      protected! unless request.host == 'localhost'
-      message = CGI::unescape(params[:message].encode("UTF-8") || '')[0..107]
-      pid = "#{params[:pid]}"
-
-      @tokens = Token.where(:app => "#{app}").reverse_order(:id)
-      @exist = Push.first(:pid => "#{pid}", :app => "#{app}")
-
-      unless @exist
-        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" ) 
-
-        openSSLContext = $certkey["#{app}"]
-        sock = nil
-        if $mode == 'production' then
-          sock = TCPSocket.new('gateway.push.apple.com', 2195)
-        else
-          sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
-        end
-        sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
-        sslSocket.connect
-
-        @tokens.each do |o|
-          tokenText = "#{o[:token]}"
-          tokenData = [tokenText].pack('H*')
-          aps = {'aps'=> {}}
-          aps['aps']['alert'] = message
-          aps['aps']['badge'] = 1
-          pm = aps.to_json
-          packet = [0,0,32,devData,0,pm.bytesize,pm].pack("ccca*cca*")
-          sslSocket.write(packet)
-        end
-        
-        sslSocket.close
-        sock.close
-      end
+      localonly(request)
+      push(params)
     end
   }
 end
