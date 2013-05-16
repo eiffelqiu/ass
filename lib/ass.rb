@@ -141,6 +141,7 @@ unless File.exist?("#{Dir.pwd}/ass-#{$mode}.db") then
     String :pid, :unique => false, :null => false, :size => 100
     String :app, :unique => false, :null => false, :size => 30
     String :message, :unique => false, :null => false, :size => 107
+    String :ip, :unique => false, :null => false, :size => 20
     Time :created_at
     index [:pid, :app, :message]
   end
@@ -215,6 +216,20 @@ class App < Sinatra::Base
     include Rack::Utils
     alias_method :h, :escape_html    
 
+    def connect_socket(app)
+      openSSLContext = $certkey["#{app}"]
+      sock = nil
+      if $mode == 'production' then
+        sock = TCPSocket.new('gateway.push.apple.com', 2195)
+      else 
+        sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
+      end
+      sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
+      sslSocket.connect
+
+      [sock, sslSocket]
+    end    
+
     def logger
       LOGGER
     end
@@ -271,31 +286,34 @@ class App < Sinatra::Base
       @exist = Push.first(:pid => "#{pid}", :app => "#{app}")      
 
       unless @exist
-
-        Push.insert(:pid => pid, :message => message, :created_at => Time.now, :app => "#{app}" ) 
-
-        openSSLContext = $certkey["#{app}"]
-        sock = nil
-        if $mode == 'production' then
-          sock = TCPSocket.new('gateway.push.apple.com', 2195)
-        else
-          sock = TCPSocket.new('gateway.sandbox.push.apple.com', 2195)
-        end
-        sslSocket = OpenSSL::SSL::SSLSocket.new(sock, openSSLContext)
-        sslSocket.connect        
+        Push.insert(:pid => pid, 
+                    :message => message, 
+                    :created_at => Time.now, 
+                    :app => "#{app}",
+                    :ip => "#{parameter.ip}" ) 
+        
+        sock, sslSocket = connect_socket("#{app}")      
 
         # write our packet to the stream
         @tokens.each do |o|
-          tokenText = "#{o[:token]}"
-          tokenData = [tokenText].pack('H*')
-          aps = {'aps'=> {}}
-          aps['aps']['alert'] = message
-          aps['aps']['badge'] = badge
-          aps['aps']['sound'] = sound
-          aps['aps']['extra'] = extra
-          pm = aps.to_json
-          packet = [0,0,32,devData,0,pm.bytesize,pm].pack("ccca*cca*")
-          sslSocket.write(packet)      
+          begin
+            tokenText = "#{o[:token]}"
+            tokenData = [tokenText].pack('H*')
+            aps = {'aps'=> {}}
+            aps['aps']['alert'] = message
+            aps['aps']['badge'] = badge
+            aps['aps']['sound'] = sound
+            aps['aps']['extra'] = extra
+            pm = aps.to_json
+            packet = [0,0,32,devData,0,pm.bytesize,pm].pack("ccca*cca*")
+            sslSocket.write(packet)  
+          rescue Errno::EPIPE, OpenSSL::SSL::SSLError => e
+            puts "e: #{e} from id:#{o[:id]}"
+            sleep 3
+            sock, sslSocket = connect_socket("#{app}")
+            next
+            #retry
+          end              
         end
         # cleanup
         sslSocket.close
