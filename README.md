@@ -217,11 +217,11 @@ open your web browser and access http://localhost:4567/ (localhost should be cha
 4. How to run ass in background? 
 -------
 
-$ nohup ass
+	$ nohup ass
 
 control + z to return to shell prompt
 
-$ bg
+	$ bg
 
 now ass is running as a background service .
 
