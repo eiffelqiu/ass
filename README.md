@@ -214,6 +214,17 @@ open your web browser and access http://localhost:4567/ (localhost should be cha
 
 ![ass usage](https://raw.github.com/eiffelqiu/ass/master/doc/capture5.png)
 
+4. How to run ass in background? 
+-------
+
+$ nohup ass
+
+control + z to return to shell prompt
+
+$ bg
+
+now ass is running as a background service .
+
 Contributing to ass
 =======
  
