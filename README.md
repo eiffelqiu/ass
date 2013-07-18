@@ -159,13 +159,11 @@ In AppDelegate file, add methods below to register device token
 
 	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	    
-	    if ([((AppDelegate *) [[UIApplication sharedApplication] delegate]) checkNetwork1]) {
 	        NSString *tokenAsString = [[[deviceToken description]
 	                                    stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]]
 	                                   stringByReplacingOccurrencesOfString:@" " withString:@""];
 	        NSLog(@"My token is: [%@]", tokenAsString);
 	        [self sendToken:tokenAsString];
-	    }
 	    
 	}
 
