@@ -145,17 +145,17 @@ else
 end
 
 class Token < Sequel::Model
-  Sequel.extension :pagination
+  #Sequel.extension :pagination
 end
 
 class Push < Sequel::Model
-  Sequel.extension :pagination
+  #Sequel.extension :pagination
 end
 
 ############################################################
 ## Timer Job Setup
 ############################################################
-scheduler = Rufus::Scheduler.start_new
+scheduler = Rufus::Scheduler.new
 
 unless $timer == 0 then
   scheduler.every "#{$timer}m" do

@@ -35,8 +35,6 @@ class App < Sinatra::Base
   register Sinatra::Synchrony
 
   use Rack::MobileDetect
-
-  enable :logging
   
   LOGGER = Logger.new("ass-#{$mode}.log", 'a+')
 
@@ -57,8 +55,18 @@ class App < Sinatra::Base
 
   if "#{$mode}".strip == 'production' then
     set :environment, :production 
+    set :raise_errors, false      
+    set :dump_errors, false       
+    set :show_exceptions, false    
+    set :logging, false           
+    set :reload, false      
   else
-    set :environment, :development    
+    set :environment, :development  
+    set :raise_errors, true      
+    set :dump_errors, true       
+    set :show_exceptions, true    
+    set :logging, true           
+    set :reload, true         
   end
 
   set :root, File.expand_path('../../../', __FILE__)
@@ -184,11 +192,7 @@ class App < Sinatra::Base
   end  
 
   before do
-    if "#{$mode}".strip == 'development' then
-      enable :dump_errors, :raise_errors, :show_exceptions
-    else
-      disable :dump_errors, :raise_errors, :show_exceptions
-    end
+
   end
 
   get '/' do
@@ -231,13 +235,13 @@ class App < Sinatra::Base
     if (db == 'token') then 
       @o = []
       $apps.each_with_index { |app, index|
-        @o << Token.where(:app => app).order(:id).reverse.paginate(page, 20)
+        @o << Token.where(:app => app).order(:id).reverse.limit(20)
       }
       erb :token
     elsif (db == 'push') then 
       @p = []
       $apps.each_with_index { |app, index|
-        @p << Push.where(:app => app).order(:id).reverse.paginate(page, 20)
+        @p << Push.where(:app => app).order(:id).reverse.limit(20)
       }
       erb :push
     else
